@@ -6,7 +6,7 @@ import { NotificationItem } from '../models/notification.model';
 export const categoryIcon = '/assets/images/categories/hair-icon.png';
 export const productImage1 = '/assets/images/products/shampoo/shampoo-dandruff.png';
 export const productImage2 = '/assets/images/products/shampoo/temp.png';
-export const coverImage = '/assets/images/covers/products-banner.png';
+export const coverImage = '/assets/images/covers/concer-banner.png';
 
 export const categories: Category[] = [
   { id: 'cat-shampoo', slug: 'shampoo', nameEn: 'Shampoos', nameAr: 'شامبوهات', productCount: 18 },

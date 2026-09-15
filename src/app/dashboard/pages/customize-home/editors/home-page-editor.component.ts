@@ -41,7 +41,7 @@ export class HomePageEditorComponent implements OnInit, OnDestroy {
   };
 
   heroVisual = '/assets/covers/hero-model-products.png';
-  offerBanner = '/assets/covers/products-banner.png';
+  offerBanner = '/assets/images/covers/concer-banner.png';
 
   private backfillLocalizedNames(sections: any[]): any[] {
     if (!sections || !Array.isArray(sections)) return sections;

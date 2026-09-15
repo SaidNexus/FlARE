@@ -14,7 +14,7 @@ const INSTANCE_ID = typeof crypto !== 'undefined' && crypto.randomUUID
   : Math.random().toString(36).substring(2) + Date.now().toString(36);
 
 const heroVisual = '/assets/covers/hero-model-products.png';
-const offerBanner = '/assets/covers/products-banner.png';
+const offerBanner = '/assets/images/covers/concer-banner.png';
 
 const initialConfig: PageConfig = {
   sections: [
@@ -233,7 +233,11 @@ export class HomePageConfigService {
           }
         }
         if (sec.type === 'promo') {
-          sec.image = this.normalizeImageUrl(sec.image, offerBanner);
+          if (!sec.image || sec.image.includes('products-banner.png')) {
+            sec.image = offerBanner;
+          } else {
+            sec.image = this.normalizeImageUrl(sec.image, offerBanner);
+          }
         }
         if (sec.type === 'categories' && Array.isArray(sec.categories)) {
           sec.categories = sec.categories.map((c: any) => ({
