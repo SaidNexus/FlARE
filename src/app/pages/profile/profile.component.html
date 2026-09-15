@@ -1,0 +1,169 @@
+@if (user) {
+  <main class="w-full max-w-7xl min-h-[calc(100vh-86px)] mx-auto px-4 sm:px-7 md:px-6 lg:px-8 xl:px-10 pb-24 text-slate-900 bg-slate-50">
+    <header id="section-sec-header" data-section-type="header" class="pt-6 sm:pt-10 mb-8 sm:mb-10">
+      <h1 class="m-0 mb-2 text-[24px] sm:text-[32px] font-black text-slate-900 leading-tight">{{ headerTitle() }}</h1>
+      <p class="m-0 text-[14px] sm:text-[15px] font-medium text-slate-500">{{ headerSubtitle() }}</p>
+    </header>
+
+    <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
+      <!-- Sidebar -->
+      <aside id="section-sec-avatar" data-section-type="avatar" class="w-full lg:w-[280px] shrink-0 bg-white border border-slate-200 rounded-[24px] overflow-hidden sticky lg:top-28">
+        @if (pageConfig().showAvatarSection !== false) {
+          <div class="flex flex-col items-center justify-center p-8 bg-slate-50 border-b border-slate-100">
+            <div class="flex items-center justify-center w-[88px] h-[88px] mb-4 text-white bg-slate-900 rounded-full shadow-md">
+              <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <div class="flex flex-col items-center gap-1 text-center">
+              <h2 class="m-0 text-[18px] font-black text-slate-900 leading-tight">{{ form.name || (isEn() ? (user.nameEn || user.name) : (user.nameAr || user.name)) }}</h2>
+              <p class="m-0 text-[13px] font-medium text-slate-500">{{ user.email }}</p>
+            </div>
+          </div>
+        }
+        
+        <nav class="flex flex-col p-3 gap-1">
+          <button 
+            type="button" 
+            class="flex items-center gap-3 w-full h-[46px] px-4 text-[14px] font-bold text-slate-900 bg-slate-100 rounded-[12px] border-none cursor-pointer transition-colors"
+            (click)="navigateTo('/profile')"
+          >
+            <svg class="w-5 h-5 text-flare-gold" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span>{{ isEn() ? 'Personal Information' : 'البيانات الشخصية' }}</span>
+          </button>
+          
+          <button 
+            type="button" 
+            class="flex items-center gap-3 w-full h-[46px] px-4 text-[14px] font-bold text-slate-600 bg-transparent rounded-[12px] border-none cursor-pointer transition-colors hover:bg-slate-50 hover:text-slate-900"
+            (click)="navigateTo('/my-orders')"
+          >
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+              <path d="M3 6h18"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+            <span>{{ isEn() ? 'My Orders' : 'طلبياتي' }}</span>
+          </button>
+          
+          <button 
+            type="button" 
+            class="flex items-center gap-3 w-full h-[46px] px-4 text-[14px] font-bold text-flare-red bg-transparent rounded-[12px] border-none cursor-pointer transition-colors mt-2 hover:bg-flare-red/10"
+            (click)="handleLogout()"
+          >
+            <svg class="w-5 h-5 text-flare-red" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" x2="9" y1="12" y2="12"/>
+            </svg>
+            <span>{{ isEn() ? 'Sign Out' : 'تسجيل الخروج' }}</span>
+          </button>
+        </nav>
+      </aside>
+
+      <!-- Main Form Content -->
+      <div class="flex-1 w-full flex flex-col gap-6">
+        @if (loading) {
+          <div class="p-12 text-center text-[15px] font-medium text-slate-500 bg-white border border-slate-200 rounded-[24px]">
+            {{ isEn() ? 'Loading...' : 'جاري التحميل...' }}
+          </div>
+        } @else {
+          <form (ngSubmit)="handleSave($event)" class="flex flex-col gap-6">
+            
+            <!-- Basic Info Card -->
+            @if (pageConfig().showBasicInfoSection !== false) {
+              <div id="section-sec-basic-info" data-section-type="basic-info" class="p-6 sm:p-8 bg-white border border-slate-200 rounded-[24px]">
+                <h3 class="m-0 mb-6 text-[18px] font-black text-slate-900">{{ isEn() ? 'Basic Information' : 'البيانات الأساسية' }}</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div class="flex flex-col gap-2">
+                    <label class="text-[13px] font-bold text-slate-700">{{ isEn() ? 'Full Name' : 'الاسم الكامل' }}</label>
+                    <input
+                      type="text"
+                      [(ngModel)]="form.name"
+                      name="name"
+                      [placeholder]="isEn() ? 'Enter your full name' : 'أدخل اسمك الكامل'"
+                      required
+                      class="h-[48px] px-4 bg-slate-50 border border-slate-200 rounded-[12px] text-[14px] font-medium text-slate-900 transition-colors focus:bg-white focus:border-slate-400 focus:outline-none"
+                    />
+                  </div>
+
+                  <div class="flex flex-col gap-2">
+                    <label class="text-[13px] font-bold text-slate-700">{{ isEn() ? 'Email Address' : 'البريد الإلكتروني' }}</label>
+                    <input 
+                      type="email" 
+                      [value]="user.email" 
+                      readonly 
+                      disabled 
+                      class="h-[48px] px-4 bg-slate-100 border border-slate-200 rounded-[12px] text-[14px] font-medium text-slate-500 cursor-not-allowed focus:outline-none" 
+                    />
+                  </div>
+
+                  <div class="flex flex-col gap-2 md:col-span-2">
+                    <label class="text-[13px] font-bold text-slate-700">{{ isEn() ? 'Phone Number' : 'رقم الجوال' }}</label>
+                    <input
+                      type="tel"
+                      [(ngModel)]="form.phone"
+                      name="phone"
+                      placeholder="+966 50 123 4567"
+                      dir="ltr"
+                      class="h-[48px] px-4 bg-slate-50 border border-slate-200 rounded-[12px] text-[14px] font-medium text-slate-900 transition-colors focus:bg-white focus:border-slate-400 focus:outline-none rtl:text-right ltr:text-left"
+                    />
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- Address Card -->
+            @if (pageConfig().showAddressSection !== false) {
+              <div id="section-sec-address" data-section-type="address" class="p-6 sm:p-8 bg-white border border-slate-200 rounded-[24px]">
+                <h3 class="m-0 mb-6 text-[18px] font-black text-slate-900">{{ isEn() ? 'Address' : 'العنوان' }}</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+                  <div class="flex flex-col gap-2">
+                    <label class="text-[13px] font-bold text-slate-700">{{ isEn() ? 'Country' : 'الدولة' }}</label>
+                    <input
+                      type="text"
+                      [(ngModel)]="form.country"
+                      name="country"
+                      [placeholder]="isEn() ? 'Country' : 'الدولة'"
+                      class="h-[48px] px-4 bg-slate-50 border border-slate-200 rounded-[12px] text-[14px] font-medium text-slate-900 transition-colors focus:bg-white focus:border-slate-400 focus:outline-none"
+                    />
+                  </div>
+
+                  <div class="flex flex-col gap-2">
+                    <label class="text-[13px] font-bold text-slate-700">{{ isEn() ? 'City' : 'المدينة' }}</label>
+                    <input
+                      type="text"
+                      [(ngModel)]="form.city"
+                      name="city"
+                      [placeholder]="isEn() ? 'City' : 'المدينة'"
+                      class="h-[48px] px-4 bg-slate-50 border border-slate-200 rounded-[12px] text-[14px] font-medium text-slate-900 transition-colors focus:bg-white focus:border-slate-400 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div class="flex rtl:justify-end ltr:justify-start pt-6 border-t border-slate-100">
+                  <button 
+                    type="submit" 
+                    [disabled]="saving" 
+                    class="flex items-center justify-center gap-2 h-[48px] px-8 text-[15px] font-bold text-white bg-slate-900 border-none rounded-[12px] cursor-pointer shadow-sm transition-all hover:bg-flare-gold hover:shadow-[0_4px_16px_rgba(169,126,61,0.2)] hover:-translate-y-px disabled:opacity-70 disabled:pointer-events-none disabled:cursor-not-allowed"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
+                      <path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/>
+                      <path d="M7 3v4a1 1 0 0 0 1 1h7"/>
+                    </svg>
+                    <span>{{ saving ? (isEn() ? 'Saving...' : 'جاري الحفظ...') : (isEn() ? 'Save Changes' : 'حفظ التغييرات') }}</span>
+                  </button>
+                </div>
+              </div>
+            }
+
+          </form>
+        }
+      </div>
+    </div>
+  </main>
+}

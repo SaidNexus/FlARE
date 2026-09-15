@@ -1,0 +1,391 @@
+<main class="w-full max-w-7xl min-h-[calc(100vh-86px)] mx-auto px-4 sm:px-7 md:px-6 lg:px-8 xl:px-10 pb-24 text-slate-900 bg-white">
+  <header id="section-sec-header" data-section-type="header" class="grid place-items-center min-h-[91px]">
+    <h1 class="mt-2 mb-0 text-slate-900 text-2xl sm:text-[30px] font-extrabold leading-[1.3]">
+      {{ (isEn() ? pageConfig().headerTitleEn : pageConfig().headerTitleAr) || pageConfig().headerTitle || (isEn() ? 'Hair Care Collection' : 'مجموعة العناية بالشعر') }}
+    </h1>
+  </header>
+
+  <!-- Filter Bar -->
+  <section class="relative z-12">
+    <div class="grid grid-cols-2 sm:grid-cols-[1.28fr_repeat(3,minmax(0,1fr))] gap-2 sm:gap-3">
+      <!-- Category Filter Button -->
+      <button
+        type="button"
+        class="flex items-center justify-between h-12 sm:h-[58px] px-3 sm:px-3.5 text-xs sm:text-[13px] font-semibold text-slate-600 bg-white border rounded-xl sm:rounded-[14px] shadow-[0_2px_6px_rgba(25,36,48,0.025)] transition-all overflow-hidden whitespace-nowrap"
+        [ngClass]="activeFilter() === 'category' ? 'text-flare-gold-dark bg-slate-50 border-flare-gold/70' : 'border-slate-200 hover:text-flare-gold-dark hover:bg-slate-50 hover:border-flare-gold/70'"
+        (click)="toggleActiveFilter('category')"
+      >
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 sm:w-[25px] sm:h-[25px] text-slate-700 stroke-[1.65]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" />
+          </svg>
+          <span class="truncate">{{ selectedCategoryLabel() }}</span>
+        </div>
+        <svg class="w-4 h-4 sm:w-[16px] sm:h-[16px] stroke-[1.8] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      <!-- Concern Filter Button -->
+      <button
+        type="button"
+        class="flex items-center justify-between h-12 sm:h-[58px] px-3 sm:px-3.5 text-xs sm:text-[13px] font-semibold text-slate-600 bg-white border rounded-xl sm:rounded-[14px] shadow-[0_2px_6px_rgba(25,36,48,0.025)] transition-all overflow-hidden whitespace-nowrap"
+        [ngClass]="activeFilter() === 'concern' ? 'text-flare-gold-dark bg-slate-50 border-flare-gold/70' : 'border-slate-200 hover:text-flare-gold-dark hover:bg-slate-50 hover:border-flare-gold/70'"
+        (click)="toggleActiveFilter('concern')"
+      >
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 sm:w-[25px] sm:h-[25px] text-slate-700 stroke-[1.65]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+          </svg>
+          <span class="truncate">{{ selectedConcernLabel() }}</span>
+        </div>
+        <svg class="w-4 h-4 sm:w-[16px] sm:h-[16px] stroke-[1.8] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      <!-- Price Filter Button -->
+      <button
+        type="button"
+        class="flex items-center justify-between h-12 sm:h-[58px] px-3 sm:px-3.5 text-xs sm:text-[13px] font-semibold text-slate-600 bg-white border rounded-xl sm:rounded-[14px] shadow-[0_2px_6px_rgba(25,36,48,0.025)] transition-all overflow-hidden whitespace-nowrap"
+        [ngClass]="activeFilter() === 'price' ? 'text-flare-gold-dark bg-slate-50 border-flare-gold/70' : 'border-slate-200 hover:text-flare-gold-dark hover:bg-slate-50 hover:border-flare-gold/70'"
+        (click)="toggleActiveFilter('price')"
+      >
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 sm:w-[25px] sm:h-[25px] text-slate-700 stroke-[1.65]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+          </svg>
+          <span class="truncate">{{ selectedPriceLabel() }}</span>
+        </div>
+        <svg class="w-4 h-4 sm:w-[16px] sm:h-[16px] stroke-[1.8] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Active Filter Dropdown Overlay -->
+    @if (activeFilter()) {
+      <div class="absolute top-[67px] right-0 left-0 p-4 sm:p-[18px] sm:pr-[48px] bg-white/95 backdrop-blur-md border border-slate-200 rounded-[15px] shadow-[0_14px_35px_rgba(21,32,45,0.13)] animate-in fade-in slide-in-from-top-4 duration-200 z-50">
+        <header class="flex justify-between items-center mb-4 text-slate-800">
+          <span class="font-bold text-sm">
+            @switch (activeFilter()) {
+              @case ('category') { {{ isEn() ? 'Select Category' : 'اختر الفئة' }} }
+              @case ('concern') { {{ isEn() ? 'Hair Concern' : 'مشكلة الشعر' }} }
+              @case ('price') { {{ isEn() ? 'Price Range' : 'نطاق السعر' }} }
+            }
+          </span>
+          <button
+            type="button"
+            class="flex items-center justify-center w-[30px] h-[30px] text-slate-500 bg-slate-100 rounded-full hover:bg-slate-200 hover:text-slate-800 transition-colors"
+            (click)="activeFilter.set(null)"
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </header>
+
+        @if (activeFilter() === 'category') {
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-[9px]">
+            @for (option of categoryOptions(); track option.value) {
+              <button
+                type="button"
+                class="inline-flex items-center justify-center min-h-[42px] px-2 gap-2 text-[12px] font-bold rounded-[9px] border transition-colors"
+                [ngClass]="selectedCategory() === option.value ? 'bg-slate-900 text-white border-slate-900 shadow-md' : 'bg-slate-50 text-slate-600 border-transparent hover:bg-slate-100 hover:text-slate-800'"
+                (click)="selectedCategory.set(option.value); activeFilter.set(null)"
+              >
+                {{ option.label }}
+              </button>
+            }
+          </div>
+        }
+
+        @if (activeFilter() === 'concern') {
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-[9px]">
+            @for (option of concernOptions(); track option.value) {
+              <button
+                type="button"
+                class="inline-flex items-center justify-center min-h-[42px] px-2 gap-2 text-[12px] font-bold rounded-[9px] border transition-colors"
+                [ngClass]="selectedConcern() === option.value ? 'bg-slate-900 text-white border-slate-900 shadow-md' : 'bg-slate-50 text-slate-600 border-transparent hover:bg-slate-100 hover:text-slate-800'"
+                (click)="selectedConcern.set(option.value); activeFilter.set(null)"
+              >
+                {{ option.label }}
+              </button>
+            }
+          </div>
+        }
+
+        @if (activeFilter() === 'price') {
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-[9px]">
+            @for (option of priceOptions(); track option.value) {
+              <button
+                type="button"
+                class="inline-flex items-center justify-center min-h-[42px] px-2 gap-2 text-[12px] font-bold rounded-[9px] border transition-colors"
+                [ngClass]="selectedPrice() === option.value ? 'bg-slate-900 text-white border-slate-900 shadow-md' : 'bg-slate-50 text-slate-600 border-transparent hover:bg-slate-100 hover:text-slate-800'"
+                (click)="selectedPrice.set(option.value); activeFilter.set(null)"
+              >
+                {{ option.label }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+    }
+  </section>
+
+  <!-- Sort Mode Bar -->
+  <section class="flex gap-2 sm:gap-[9px] mt-[13px]" [attr.aria-label]="isEn() ? 'Sort Products' : 'ترتيب المنتجات'">
+    <button
+      type="button"
+      class="flex items-center gap-[7px] h-[36px] px-3.5 sm:px-[17px] text-[11px] sm:text-[12.5px] font-bold rounded-full border transition-all"
+      [ngClass]="sortMode() === 'bestseller' ? 'text-white bg-slate-800 border-slate-800 shadow-sm' : 'text-slate-500 bg-white border-slate-200 hover:bg-slate-50 hover:text-slate-800'"
+      (click)="sortMode.set('bestseller')"
+    >
+      <svg class="w-3.5 h-3.5 sm:w-[15px] sm:h-[15px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+      </svg>
+      <span>{{ isEn() ? 'Best Sellers' : 'الأكثر مبيعًا' }}</span>
+    </button>
+    <button
+      type="button"
+      class="flex items-center gap-[7px] h-[36px] px-3.5 sm:px-[17px] text-[11px] sm:text-[12.5px] font-bold rounded-full border transition-all"
+      [ngClass]="sortMode() === 'latest' ? 'text-white bg-slate-800 border-slate-800 shadow-sm' : 'text-slate-500 bg-white border-slate-200 hover:bg-slate-50 hover:text-slate-800'"
+      (click)="sortMode.set('latest')"
+    >
+      <svg class="w-3.5 h-3.5 sm:w-[15px] sm:h-[15px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+      </svg>
+      <span>{{ isEn() ? 'Newest' : 'الأحدث' }}</span>
+    </button>
+  </section>
+
+  <!-- View Mode & Count Bar -->
+  <div class="flex flex-wrap items-center justify-between gap-4 mt-6 sm:mt-[38px] mb-4 sm:mb-[22px] border-b border-slate-200/60 pb-3 sm:pb-[18px]">
+    <div class="flex gap-1.5" [attr.aria-label]="isEn() ? 'View Mode' : 'طريقة العرض'">
+      <button
+        type="button"
+        class="flex items-center justify-center w-8 h-8 sm:w-[34px] sm:h-[34px] rounded-[9px] transition-colors"
+        [ngClass]="viewMode() === 'list' ? 'bg-flare-gold/10 text-flare-gold-dark' : 'text-slate-400 bg-transparent hover:bg-slate-100 hover:text-slate-600'"
+        (click)="viewMode.set('list')"
+        [attr.aria-label]="isEn() ? 'List view' : 'عرض قائمة'"
+      >
+        <svg class="w-4 h-4 sm:w-[17px] sm:h-[17px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        class="flex items-center justify-center w-8 h-8 sm:w-[34px] sm:h-[34px] rounded-[9px] transition-colors"
+        [ngClass]="viewMode() === 'grid' ? 'bg-flare-gold/10 text-flare-gold-dark' : 'text-slate-400 bg-transparent hover:bg-slate-100 hover:text-slate-600'"
+        (click)="viewMode.set('grid')"
+        [attr.aria-label]="isEn() ? 'Grid view' : 'عرض شبكة'"
+      >
+        <svg class="w-4 h-4 sm:w-[17px] sm:h-[17px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7" rx="1" />
+          <rect x="14" y="3" width="7" height="7" rx="1" />
+          <rect x="14" y="14" width="7" height="7" rx="1" />
+          <rect x="3" y="14" width="7" height="7" rx="1" />
+        </svg>
+      </button>
+    </div>
+
+    <p class="m-0 text-slate-500 text-[11px] sm:text-[12.5px] font-semibold">
+      <strong class="text-slate-800 text-[12px] sm:text-[14px] font-black">{{ filteredItems().length }}</strong> {{ isEn() ? 'products' : 'منتج' }}
+    </p>
+
+    @if (hasActiveFilters()) {
+      <button
+        type="button"
+        class="text-xs sm:text-[12px] font-bold text-flare-red underline hover:text-flare-red transition-colors bg-transparent border-none p-0 cursor-pointer"
+        (click)="resetFilters()"
+      >
+        {{ isEn() ? 'Clear filters' : 'مسح الفلاتر' }}
+      </button>
+    }
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <section
+      class="grid gap-3 sm:gap-[13px] md:gap-4 lg:gap-6"
+      [ngClass]="viewMode() === 'grid' ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'"
+      [attr.aria-label]="isEn() ? 'Loading products' : 'جاري التحميل'"
+    >
+      <div class="flex flex-col min-w-0 min-h-[268px] overflow-hidden bg-white border border-slate-200 rounded-[15px] animate-pulse">
+        <div class="h-[140px] bg-slate-100"></div>
+      </div>
+      <div class="flex flex-col min-w-0 min-h-[268px] overflow-hidden bg-white border border-slate-200 rounded-[15px] animate-pulse">
+        <div class="h-[140px] bg-slate-100"></div>
+      </div>
+    </section>
+  } @else if (filteredItems().length) {
+    <!-- Products Grid / List -->
+    <section
+      class="grid gap-3 sm:gap-[13px] md:gap-4 lg:gap-6"
+      [ngClass]="viewMode() === 'grid' ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'"
+      [attr.aria-label]="isEn() ? 'Products list' : 'قائمة المنتجات'"
+    >
+      @for (item of visibleItems(); track item.id; let index = $index) {
+        @let isFav = appState.isFavorite(item.id);
+
+        <article
+          class="group relative flex flex-col min-w-0 min-h-[clamp(218px,35.3vw,268px)] overflow-hidden text-slate-900 bg-white border border-slate-200 rounded-[clamp(11px,2vw,15px)] transition-all duration-170 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(22,34,48,0.07)] hover:border-flare-gold/30 animate-[lkHomeCardRise_0.52s_cubic-bezier(0.22,0.8,0.32,1)_backwards]"
+          [style.animation-delay]="index * 0.05 + 's'"
+        >
+          <a [routerLink]="['/products', item.id]" class="relative h-[clamp(91px,16.85vw,140px)] p-[clamp(5px,1vw,10px)] bg-white overflow-hidden">
+            <img
+              [src]="getProductImage(item)"
+              (error)="onImgError($event)"
+              [alt]="isEn() ? (item.nameEn || item.nameAr) : item.nameAr"
+              loading="lazy"
+              decoding="async"
+              class="w-full h-full object-contain transition-transform duration-200 group-hover:scale-105"
+            />
+          </a>
+
+          <!-- Favorite Button -->
+          <button
+            type="button"
+            class="absolute top-2.5 right-2.5 z-10 flex items-center justify-center w-[26px] h-[26px] p-0 border border-slate-200 rounded-full transition-all duration-150 cursor-pointer hover:border-flare-red"
+            [ngClass]="isFav ? 'bg-flare-red text-white border-flare-red' : 'bg-white text-slate-300 hover:text-flare-red'"
+            (click)="onToggleFavorite(item, $event)"
+            [attr.aria-label]="isFav ? (isEn() ? 'Remove from favorites' : 'إزالة من المفضلة') : (isEn() ? 'Add to favorites' : 'إضافة إلى المفضلة')"
+          >
+            <svg class="w-[14px] h-[14px] stroke-2" [attr.fill]="isFav ? 'currentColor' : 'none'" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
+
+          <!-- Details -->
+          <div class="flex flex-col flex-1 px-1 sm:px-2.5 pt-1 pb-3.5">
+            <a [routerLink]="['/products', item.id]" class="no-underline">
+              <h2 class="m-0 mb-1 sm:mb-1.5 text-[clamp(11px,1.9vw,13px)] font-bold text-slate-800 leading-[1.3] line-clamp-2 transition-colors group-hover:text-flare-gold">
+                {{ isEn() ? (item.nameEn || item.nameAr) : item.nameAr }}
+              </h2>
+            </a>
+
+            <div class="flex flex-wrap items-baseline gap-1 sm:gap-2 mb-1 sm:mb-1.5">
+              <div class="flex items-baseline gap-[3px]">
+                <strong class="text-[clamp(13px,2.25vw,16px)] font-black text-slate-900">{{ item.price }}</strong>
+                <span class="text-[10px] font-bold text-slate-600">{{ currencyLabel() }}</span>
+              </div>
+              @if (pageConfig().showOriginalPrice && item.originalPrice && item.originalPrice > item.price) {
+                <del class="flex items-baseline gap-[2px] text-[clamp(9px,1.6vw,12px)] font-medium text-slate-400">
+                  <strong>{{ item.originalPrice }}</strong>
+                  <span>{{ currencyLabel() }}</span>
+                </del>
+              }
+            </div>
+
+            <div class="flex items-center justify-between mt-auto pt-2">
+              @if (pageConfig().showRating || pageConfig().showReviewsCount) {
+                <div class="flex items-center gap-1.5">
+                  @if (pageConfig().showRating) {
+                    <span class="flex text-yellow-400">
+                      @for (star of [0, 1, 2, 3, 4]; track star) {
+                        <svg class="w-[11px] h-[11px] sm:w-[12px] sm:h-[12px]" [attr.fill]="star < floorRating(item.rating) ? 'currentColor' : 'none'" viewBox="0 0 24 24" stroke="currentColor">
+                          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                        </svg>
+                      }
+                    </span>
+                  }
+                  @if (pageConfig().showReviewsCount) {
+                    <small class="text-[10px] font-medium text-slate-400">({{ item.reviewCount }})</small>
+                  }
+                </div>
+              } @else {
+                <div></div>
+              }
+
+              <button
+                type="button"
+                class="grid place-items-center w-[28px] h-[28px] sm:w-[32px] sm:h-[32px] text-white bg-slate-900 border-none rounded-full cursor-pointer transition-all hover:bg-flare-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flare-gold/50"
+                (click)="onAddToCart(item, $event)"
+                [attr.aria-label]="(isEn() ? 'Add ' : 'إضافة ') + (isEn() ? (item.nameEn || item.nameAr) : item.nameAr) + (isEn() ? ' to cart' : ' إلى السلة')"
+              >
+                <svg class="w-[14px] h-[14px] sm:w-[16px] sm:h-[16px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                  <circle cx="9" cy="21" r="1" />
+                  <circle cx="20" cy="21" r="1" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </article>
+      }
+    </section>
+  } @else {
+    <!-- Empty State -->
+    <section id="section-sec-empty" data-section-type="empty" class="flex flex-col items-center justify-center min-h-[300px] text-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-[24px] px-5 py-12">
+      <h2 class="m-0 mb-3 text-[18px] sm:text-[22px] font-black text-slate-900">
+        {{ (isEn() ? pageConfig().emptyTitleEn : pageConfig().emptyTitleAr) || pageConfig().emptyTitle || (isEn() ? 'No products match these specifications' : 'لا توجد منتجات بهذه المواصفات') }}
+      </h2>
+      <p class="m-0 mb-8 text-[13px] sm:text-[15px] font-medium text-slate-600">
+        {{ (isEn() ? pageConfig().emptyTextEn : pageConfig().emptyTextAr) || pageConfig().emptyText || (isEn() ? 'Try changing the category, concern or price range.' : 'جرّبي تغيير الفئة أو المشكلة أو نطاق السعر.') }}
+      </p>
+      <button
+        type="button"
+        class="h-[46px] px-8 text-[13px] font-bold text-white bg-slate-900 border-none rounded-full cursor-pointer transition-all hover:bg-flare-gold hover:-translate-y-0.5 shadow-[0_4px_12px_rgba(17,24,39,0.15)]"
+        (click)="resetFilters()"
+      >
+        {{ (isEn() ? pageConfig().emptyCtaEn : pageConfig().emptyCtaAr) || pageConfig().emptyCta || (isEn() ? 'View all products' : 'عرض كل المنتجات') }}
+      </button>
+    </section>
+  }
+
+  <!-- Pagination -->
+  @if (filteredItems().length > pageSize) {
+    <nav class="flex flex-col items-center gap-[18px] mt-[32px] sm:mt-[42px] pt-[22px] sm:pt-[32px] border-t border-slate-200" [attr.aria-label]="isEn() ? 'Pagination navigation' : 'التنقل بين صفحات المنتجات'">
+      @if (!showAllProducts()) {
+        <div class="flex items-center justify-center gap-1.5 sm:gap-2 w-full">
+          <button
+            type="button"
+            class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-slate-500 bg-white border border-slate-200 rounded-lg cursor-pointer transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:not:disabled:bg-slate-50 hover:not:disabled:text-flare-gold"
+            [disabled]="currentPage() === 1"
+            (click)="currentPage.update(p => p - 1)"
+            [attr.aria-label]="isEn() ? 'Previous page' : 'الصفحة السابقة'"
+          >
+            <svg class="w-4 h-4 sm:w-5 sm:h-5 rtl:rotate-0 ltr:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
+          <div class="flex items-center justify-center gap-1 sm:gap-1.5">
+            @for (num of pageNumbers(); track num) {
+              <button
+                type="button"
+                class="flex items-center justify-center min-w-[32px] h-[32px] sm:min-w-[40px] sm:h-[40px] px-2 text-[12px] sm:text-[14px] font-bold rounded-lg border cursor-pointer transition-all"
+                [ngClass]="currentPage() === num ? 'text-white bg-flare-gold border-flare-gold shadow-[0_4px_12px_rgba(169,126,61,0.25)]' : 'text-slate-600 bg-white border-slate-200 hover:bg-slate-50 hover:text-slate-900'"
+                (click)="currentPage.set(num)"
+                [attr.aria-label]="(isEn() ? 'Go to page ' : 'الانتقال إلى الصفحة ') + num"
+                [attr.aria-current]="currentPage() === num ? 'page' : null"
+              >
+                {{ num }}
+              </button>
+            }
+          </div>
+
+          <button
+            type="button"
+            class="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-slate-500 bg-white border border-slate-200 rounded-lg cursor-pointer transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:not:disabled:bg-slate-50 hover:not:disabled:text-flare-gold"
+            [disabled]="currentPage() === totalPages()"
+            (click)="currentPage.update(p => p + 1)"
+            [attr.aria-label]="isEn() ? 'Next page' : 'الصفحة التالية'"
+          >
+            <svg class="w-4 h-4 sm:w-5 sm:h-5 rtl:rotate-0 ltr:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        </div>
+      }
+
+      <button
+        type="button"
+        class="text-[12px] sm:text-[13px] font-bold text-slate-500 underline bg-transparent border-none p-0 cursor-pointer transition-colors hover:text-flare-gold"
+        (click)="showAllProducts.update(v => !v); currentPage.set(1)"
+      >
+        {{ showAllProducts() ? (isEn() ? 'Show 12 products per page' : 'عرض 12 منتجًا في الصفحة') : (isEn() ? 'Show all products' : 'عرض كل المنتجات') }}
+      </button>
+    </nav>
+  }
+</main>

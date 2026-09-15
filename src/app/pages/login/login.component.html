@@ -1,0 +1,215 @@
+<main class="min-h-screen bg-slate-50 text-slate-900 overflow-x-hidden selection:bg-flare-gold/20 selection:text-flare-gold">
+  <div 
+    class="relative min-h-screen flex flex-col pt-12 sm:pt-20 px-4 sm:px-6 z-10"
+    style="background-image: url('/assets/hero.png'); background-size: cover; background-position: center; background-attachment: fixed;"
+  >
+    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px] -z-10"></div>
+    
+    <section class="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-20 w-full max-w-[1200px] mx-auto mb-16 lg:mb-32">
+      <aside id="section-sec-hero" data-section-type="hero" class="flex flex-col items-center lg:items-start text-center lg:rtl:text-right lg:ltr:text-left max-w-[500px]" aria-label="FLARE">
+        <img
+          class="h-16 lg:h-20 mb-10 object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)] filter brightness-0 invert"
+          src="/assets/images/logo/logo.png"
+          alt="FLARE"
+          draggable="false"
+        />
+
+        <div class="flex flex-col items-center lg:items-start">
+          <h1 class="m-0 mb-6 text-[36px] sm:text-[48px] font-black text-white leading-tight drop-shadow-md">
+            {{ heroTitlePrefix() }}<strong class="text-flare-gold">{{ heroTitleHighlight() }}</strong>
+          </h1>
+
+          <span class="w-16 h-1 bg-flare-gold rounded-full mb-6 shadow-[0_2px_8px_rgba(169,126,61,0.4)]" aria-hidden="true"></span>
+
+          <p class="m-0 text-[18px] sm:text-[20px] font-medium text-slate-200 leading-relaxed drop-shadow-sm">
+            {{ heroSubtitle() }}
+          </p>
+        </div>
+      </aside>
+
+      <section id="section-sec-login-card" data-section-type="summary" class="w-full max-w-[460px] bg-white rounded-[32px] p-8 sm:p-10 shadow-[0_24px_48px_rgba(0,0,0,0.12)] relative" aria-labelledby="login-title">
+        <div class="absolute -top-6 left-1/2 -translate-x-1/2 flex items-center justify-center w-12 h-12 bg-slate-900 rounded-2xl shadow-lg border-4 border-white text-white" aria-hidden="true">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+
+        <header class="flex flex-col items-center text-center mb-8 pt-4">
+          <h2 id="login-title" class="m-0 mb-3 text-[28px] font-black text-slate-900 leading-tight">{{ welcomeTitle() }}</h2>
+
+          <p class="flex items-center gap-2 m-0 text-[15px] font-medium text-slate-500">
+            <svg class="w-4 h-4 text-flare-gold" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+            </svg>
+            <span>
+              {{ welcomeSubtitle() }}
+            </span>
+          </p>
+        </header>
+
+        <form class="flex flex-col gap-5" (ngSubmit)="handleSubmit()">
+          <label class="relative flex flex-col cursor-text group">
+            <svg class="absolute rtl:right-4 ltr:left-4 top-[14px] w-[20px] h-[20px] text-slate-400 pointer-events-none transition-colors group-focus-within:text-slate-900" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <rect width="20" height="16" x="2" y="4" rx="2"/>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            </svg>
+
+            <input
+              type="email"
+              [(ngModel)]="form.email"
+              name="email"
+              [placeholder]="isEn() ? 'Email Address' : 'البريد الإلكتروني'"
+              autocomplete="email"
+              required
+              class="h-[48px] rtl:pl-4 rtl:pr-12 ltr:pr-4 ltr:pl-12 bg-slate-50 border border-slate-200 rounded-[16px] text-[15px] font-medium text-slate-900 transition-all focus:bg-white focus:border-slate-900 focus:shadow-[0_0_0_4px_rgba(15,23,42,0.08)] focus:outline-none placeholder:text-slate-400"
+            />
+          </label>
+
+          <label class="relative flex flex-col cursor-text group">
+            <svg class="absolute rtl:right-4 ltr:left-4 top-[14px] w-[20px] h-[20px] text-slate-400 pointer-events-none transition-colors group-focus-within:text-slate-900" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              [(ngModel)]="form.password"
+              name="password"
+              [placeholder]="isEn() ? 'Password' : 'كلمة المرور'"
+              autocomplete="current-password"
+              required
+              class="h-[48px] rtl:pl-12 rtl:pr-12 ltr:pr-12 ltr:pl-12 bg-slate-50 border border-slate-200 rounded-[16px] text-[15px] font-medium text-slate-900 transition-all focus:bg-white focus:border-slate-900 focus:shadow-[0_0_0_4px_rgba(15,23,42,0.08)] focus:outline-none placeholder:text-slate-400"
+            />
+
+            <button
+              type="button"
+              class="absolute rtl:left-2 ltr:right-2 top-2 flex items-center justify-center w-8 h-8 text-slate-400 rounded-full hover:bg-slate-100 hover:text-slate-900 transition-colors"
+              (click)="toggleShowPassword()"
+              [attr.aria-label]="showPassword ? (isEn() ? 'Hide password' : 'إخفاء كلمة المرور') : (isEn() ? 'Show password' : 'إظهار كلمة المرور')"
+            >
+              @if (showPassword) {
+                <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24m-7.07-7.07C4.1 8.87 2 12 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61m2.89-2.89C21.39 13.62 22 12 22 12s-3-7-10-7a9.74 9.74 0 0 0-3.32.61"/>
+                  <line x1="2" x2="22" y1="2" y2="22"/>
+                </svg>
+              } @else {
+                <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              }
+            </button>
+          </label>
+
+          <div class="flex items-center justify-between mb-2">
+            <label class="flex items-center gap-2.5 cursor-pointer group">
+              <input
+                type="checkbox"
+                [(ngModel)]="form.remember"
+                name="remember"
+                class="peer sr-only"
+              />
+              <span class="flex items-center justify-center w-[22px] h-[22px] bg-white border-2 border-slate-300 rounded-[6px] transition-all peer-checked:bg-slate-900 peer-checked:border-slate-900 peer-focus-visible:shadow-[0_0_0_4px_rgba(15,23,42,0.12)]" aria-hidden="true">
+                <svg class="w-3.5 h-3.5 text-white opacity-0 scale-50 transition-all peer-checked:opacity-100 peer-checked:scale-100" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                  <path d="M20 6 9 17l-5-5"/>
+                </svg>
+              </span>
+              <span class="text-[14px] font-bold text-slate-600 transition-colors group-hover:text-slate-900">{{ isEn() ? 'Remember me' : 'تذكرني' }}</span>
+            </label>
+
+            <a routerLink="/forgot-password" class="text-[14px] font-bold text-slate-500 no-underline transition-colors hover:text-slate-900">{{ isEn() ? 'Forgot password?' : 'نسيت كلمة المرور؟' }}</a>
+          </div>
+
+          <button
+            type="submit"
+            class="flex items-center justify-center gap-3 h-[52px] w-full px-6 text-[16px] font-black text-white bg-slate-900 rounded-[16px] shadow-[0_8px_24px_rgba(15,23,42,0.16)] transition-all hover:bg-slate-800 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-70 disabled:pointer-events-none cursor-pointer"
+            [disabled]="isSubmitting"
+          >
+            <svg class="w-5 h-5 rtl:rotate-0 ltr:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path d="m12 19-7-7 7-7"/>
+              <path d="M19 12H5"/>
+            </svg>
+            <span>{{ isSubmitting ? (isEn() ? 'Signing in...' : 'جاري تسجيل الدخول...') : (isEn() ? 'Sign In' : 'تسجيل الدخول') }}</span>
+          </button>
+        </form>
+
+        @if (pageConfig().showSocialLogin !== false) {
+          <div class="flex items-center gap-4 my-8" aria-hidden="true">
+            <span class="h-px flex-1 bg-slate-100"></span>
+            <b class="text-[12px] font-bold text-slate-400">{{ isEn() ? 'Or sign in with' : 'أو سجل الدخول باستخدام' }}</b>
+            <span class="h-px flex-1 bg-slate-100"></span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3 mb-8">
+            <button type="button" (click)="handleSocialLogin()" aria-label="Google" class="flex items-center justify-center h-[48px] bg-slate-50 border border-slate-200 rounded-[14px] transition-all hover:bg-white hover:border-slate-300 hover:shadow-sm cursor-pointer">
+              <span class="font-bold text-slate-700 text-sm">Google</span>
+            </button>
+
+            <button type="button" (click)="handleSocialLogin()" aria-label="Apple" class="flex items-center justify-center h-[48px] bg-slate-50 border border-slate-200 rounded-[14px] transition-all hover:bg-white hover:border-slate-300 hover:shadow-sm cursor-pointer">
+              <span class="font-bold text-slate-700 text-sm">Apple</span>
+            </button>
+
+            <button type="button" (click)="handleSocialLogin()" aria-label="Facebook" class="flex items-center justify-center h-[48px] bg-slate-50 border border-slate-200 rounded-[14px] transition-all hover:bg-white hover:border-slate-300 hover:shadow-sm cursor-pointer">
+              <span class="font-bold text-slate-700 text-sm">Facebook</span>
+            </button>
+          </div>
+        }
+
+        <p class="m-0 text-center text-[15px] font-bold text-slate-500">
+          <span class="rtl:ml-1 ltr:mr-1">{{ isEn() ? 'Don\'t have an account?' : 'ليس لديك حساب؟' }}</span>
+          <a routerLink="/register" class="text-flare-gold no-underline transition-colors hover:text-slate-900">{{ isEn() ? 'Create New Account' : 'إنشاء حساب جديد' }}</a>
+        </p>
+      </section>
+    </section>
+
+    <section id="section-sec-benefits" data-section-type="benefits" class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-[1200px] mx-auto mt-auto pb-10" [attr.aria-label]="isEn() ? 'Store Features' : 'مميزات المتجر'">
+      @for (b of localizedBenefits(); track b.title) {
+        <article class="flex flex-col items-center text-center p-6 bg-slate-900/40 backdrop-blur-md rounded-[24px] border border-white/10 text-white">
+          @if (b.icon === 'shield') {
+            <svg class="w-8 h-8 mb-4 opacity-80" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+          } @else if (b.icon === 'box') {
+            <svg class="w-8 h-8 mb-4 opacity-80" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+              <path d="m3.3 7 8.7 5 8.7-5"/>
+              <path d="M12 22V12"/>
+            </svg>
+          } @else if (b.icon === 'truck') {
+            <svg class="w-8 h-8 mb-4 opacity-80" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/>
+              <path d="M15 18H9"/>
+              <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/>
+              <circle cx="17" cy="18" r="2"/>
+              <circle cx="7" cy="18" r="2"/>
+            </svg>
+          } @else {
+            <svg class="w-8 h-8 mb-4 opacity-80" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>
+            </svg>
+          }
+          <h3 class="m-0 mb-2 text-[16px] font-black">{{ b.title }}</h3>
+          <p class="m-0 text-[13px] font-medium text-white/70 leading-relaxed">
+            {{ b.lines[0] }}
+            <br />
+            {{ b.lines[1] }}
+          </p>
+        </article>
+      }
+    </section>
+
+    <footer class="flex flex-col md:flex-row items-center justify-between gap-4 w-full max-w-[1200px] mx-auto py-6 border-t border-white/10 text-[13px] font-medium text-white/60">
+      <p class="m-0">{{ isEn() ? 'All Rights Reserved © 2024 FLARE.' : 'جميع الحقوق محفوظة © 2024 FLARE.' }}</p>
+
+      <nav class="flex items-center gap-4" [attr.aria-label]="isEn() ? 'Help links' : 'روابط المساعدة'">
+        <a routerLink="/policies" class="text-white/60 no-underline transition-colors hover:text-white">{{ isEn() ? 'Privacy Policy' : 'سياسة الخصوصية' }}</a>
+        <span class="w-1 h-1 bg-white/20 rounded-full" aria-hidden="true"></span>
+        <a routerLink="/policies" class="text-white/60 no-underline transition-colors hover:text-white">{{ isEn() ? 'Terms & Conditions' : 'الشروط والأحكام' }}</a>
+        <span class="w-1 h-1 bg-white/20 rounded-full" aria-hidden="true"></span>
+        <a routerLink="/contact" class="text-white/60 no-underline transition-colors hover:text-white">{{ isEn() ? 'Contact Us' : 'اتصل بنا' }}</a>
+      </nav>
+    </footer>
+  </div>
+</main>

@@ -1,0 +1,8 @@
+<section class="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 my-6 sm:my-10 lg:my-12" aria-label="Offer Banner">
+  <a routerLink="/offers"
+    class="relative block w-full overflow-hidden rounded-2xl sm:rounded-3xl lg:rounded-[2rem] transition-all duration-500 group no-underline">
+    <img [src]="bannerImage" (error)="onImgError($event)" alt="FLARE Offer"
+      class="w-full h-80 block object-cover transition-transform duration-700 ease-out" loading="lazy"
+      decoding="async" />
+  </a>
+</section>

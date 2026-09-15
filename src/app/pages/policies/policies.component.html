@@ -1,0 +1,89 @@
+<div class="bg-[#FCF8F5] min-h-[calc(100vh-86px)] px-4 sm:px-7 md:px-8 lg:px-16 pt-12 pb-24 max-w-7xl mx-auto">
+  <div id="section-policies-header" data-section-type="summary" class="text-center mb-12">
+    <div class="inline-flex items-center justify-center w-16 h-16 bg-[#f5e4d0] rounded-full text-[#BE9048] mb-4">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
+      </svg>
+    </div>
+    <h1 class="text-3xl font-[800] text-[#1a1a1a]">
+      {{ isEn() ? 'Policies & Terms' : (pageConfig().title || 'السياسات والمعلومات') }}
+    </h1>
+    <p class="text-[#888888] mt-2">
+      {{ isEn() ? 'Learn about our store policies and terms of service' : (pageConfig().subtitle || 'تعرف على سياسات المتجر وشروط استخدامه') }}
+    </p>
+  </div>
+
+  <div id="section-policies-list" data-section-type="features" class="flex flex-col gap-8">
+    <div class="bg-white border border-[#f0eae5] rounded-xl p-8 shadow-sm">
+      <div class="flex items-center gap-3 mb-4">
+        <svg class="w-6 h-6 text-[#A97E3D] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+          <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+          <path d="M16 21h5v-5"/>
+        </svg>
+        <h2 class="text-xl font-[800] text-[#1a1a1a] m-0">
+          {{ isEn() ? 'Return & Exchange Policy' : 'سياسة الاستبدال والاسترجاع' }}
+        </h2>
+      </div>
+      <div class="text-[#666666] leading-relaxed space-y-4">
+        <p>
+          {{ isEn() ? 'At FLARE, your complete satisfaction is our priority. If an item does not suit your needs, you can request an exchange or return within 14 days of receiving your order.' : 'نهتم في FLARE برضاك التام. إذا لم يكن المنتج مناسباً، يمكنك طلب استبدال المنتج خلال 14 يوماً من تاريخ استلام الطلب.' }}
+        </p>
+        <ul class="list-disc list-inside space-y-2 text-sm">
+          <li>{{ isEn() ? 'Item must be in its original, sealed, and completely unused condition.' : 'يجب أن يكون المنتج في حالته الأصلية تماماً وغير مستخدم.' }}</li>
+          <li>{{ isEn() ? 'Original packaging, serial labels, and box must be kept intact.' : 'يجب الاحتفاظ بالغلاف الأصلي وجميع الملصقات.' }}</li>
+          <li>{{ isEn() ? 'Customer covers standard return shipping fees unless an item defect is found.' : 'يتحمل العميل رسوم الشحن الخاصة بالاستبدال إلا في حال وجود عيب مصنعي.' }}</li>
+          <li>{{ isEn() ? 'For health and hygiene standards, unsealed formulas cannot be refunded.' : 'لأسباب صحية، بعض منتجات العناية المفتوحة لا يشملها الاسترجاع.' }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bg-white border border-[#f0eae5] rounded-xl p-8 shadow-sm">
+      <div class="flex items-center gap-3 mb-4">
+        <svg class="w-6 h-6 text-[#A97E3D] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/>
+          <path d="M15 18H9"/>
+          <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/>
+          <circle cx="17" cy="18" r="2"/>
+          <circle cx="7" cy="18" r="2"/>
+        </svg>
+        <h2 class="text-xl font-[800] text-[#1a1a1a] m-0">
+          {{ isEn() ? 'Shipping & Delivery Policy' : 'سياسة الشحن والتوصيل' }}
+        </h2>
+      </div>
+      <div class="text-[#666666] leading-relaxed space-y-4">
+        <p>
+          {{ isEn() ? 'We continuously strive to deliver your orders as swiftly as possible across all cities and regions of Saudi Arabia.' : 'نسعى دائماً لإيصال طلباتكم في أسرع وقت ممكن إلى جميع مدن المملكة العربية السعودية.' }}
+        </p>
+        <ul class="list-disc list-inside space-y-2 text-sm">
+          <li>{{ isEn() ? 'Riyadh delivery time: 24 - 48 business hours.' : 'مدة التوصيل داخل الرياض: 24 - 48 ساعة عمل.' }}</li>
+          <li>{{ isEn() ? 'Other cities in Saudi Arabia: 2 - 5 business days.' : 'مدة التوصيل لباقي مدن المملكة: 2 - 5 أيام عمل.' }}</li>
+          <li>{{ isEn() ? 'Free shipping is available for all orders over 300 SAR.' : 'الشحن المجاني متاح للطلبات التي تتجاوز قيمتها 300 ريال.' }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bg-white border border-[#f0eae5] rounded-xl p-8 shadow-sm">
+      <div class="flex items-center gap-3 mb-4">
+        <svg class="w-6 h-6 text-[#A97E3D] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        <h2 class="text-xl font-[800] text-[#1a1a1a] m-0">
+          {{ isEn() ? 'Privacy & Security Policy' : 'سياسة الخصوصية' }}
+        </h2>
+      </div>
+      <div class="text-[#666666] leading-relaxed space-y-4">
+        <p>
+          {{ isEn() ? 'Your personal information and payment credentials enjoy the highest degree of security and encryption.' : 'بياناتك الشخصية ومعلومات الدفع الخاصة بك تحظى بأعلى درجات الأمان والتشفير.' }}
+        </p>
+        <ul class="list-disc list-inside space-y-2 text-sm">
+          <li>{{ isEn() ? 'We never sell or share your information with external third parties for marketing purposes.' : 'نحن لا نشارك معلوماتك مع أي أطراف ثالثة لأغراض تسويقية.' }}</li>
+          <li>{{ isEn() ? 'Your data is strictly utilized to process your shipments and refine your shopping experience.' : 'نستخدم معلوماتك فقط لمعالجة الطلبات وتحسين تجربتك في الموقع.' }}</li>
+          <li>{{ isEn() ? 'All payment gateways are authenticated and encrypted using state-of-the-art SSL certificates.' : 'جميع بوابات الدفع لدينا موثقة ومحمية بأحدث تقنيات التشفير العالمية.' }}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

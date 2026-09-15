@@ -1,1 +1,338 @@
-/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+@import './assets/styles/dashboard/admin-catalog-page.css';
+@import './assets/styles/dashboard/admin-floating-chat.css';
+@import './assets/styles/dashboard/admin-login-page.css';
+@import './assets/styles/dashboard/dashboard-layout.css';
+@import './assets/styles/dashboard/dashboard-login-page.css';
+@import './assets/styles/dashboard/dashboard-overdue-alerts.css';
+@import './assets/styles/dashboard/dashboard-overdue-alerts.top-left-compact.css';
+@import './assets/styles/dashboard/dashboard-page.css';
+@import './assets/styles/dashboard/dashboard-sidebar-unified.css';
+@import './assets/styles/dashboard/operations-center-page.css';
+
+@theme {
+  --color-flare-gold: #BE9048;
+  --color-flare-gold-dark: #A67935;
+  --color-flare-black: #111111;
+  --color-flare-cream: #FCF8F5;
+  --color-flare-white: #FFFFFF;
+  --color-flare-red: #D32F2F;
+}
+
+@layer base {
+  body {
+    @apply text-flare-black bg-flare-white overflow-x-hidden;
+  }
+
+  html[dir="rtl"] body {
+    direction: rtl;
+    text-align: right;
+  }
+
+  html[dir="ltr"] body {
+    direction: ltr;
+    text-align: left;
+  }
+}
+
+.lk-lang-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #111111;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  transition: all 160ms ease;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.lk-lang-btn:hover {
+  background: #f8fafc;
+  border-color: #be9048;
+  color: #be9048;
+  box-shadow: 0 2px 4px rgba(190, 144, 72, 0.15);
+  transform: translateY(-1px);
+}
+
+.lk-lang-btn:active {
+  transform: scale(0.96);
+}
+
+.lk-lang-btn__icon {
+  display: inline-flex;
+  align-items: center;
+  color: #64748b;
+  transition: color 160ms ease;
+}
+
+.lk-lang-btn:hover .lk-lang-btn__icon {
+  color: #be9048;
+}
+
+.lk-lang-btn__text {
+  letter-spacing: 0.3px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.lk-lang-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #be9048;
+  background: rgba(190, 144, 72, 0.1);
+  border-radius: 999px;
+}
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  @keyframes lkHomeRevealUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes lkHomeModelBreathe {
+    0% {
+      transform: scale(1.01) translate3d(0, 0, 0);
+    }
+
+    100% {
+      transform: scale(1.045) translate3d(-3px, -2px, 0);
+    }
+  }
+
+  @keyframes lkHomeOfferFloat {
+
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+
+    50% {
+      transform: translate3d(0, -4px, 0);
+    }
+  }
+
+  @keyframes lkHomeShineSweep {
+
+    0%,
+    68% {
+      transform: translateX(-170%) skewX(-20deg);
+      opacity: 0;
+    }
+
+    72% {
+      opacity: .42;
+    }
+
+    90%,
+    100% {
+      transform: translateX(190%) skewX(-20deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes lkHomeCardRise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes sidebar-slide {
+    from {
+      transform: translateX(100%);
+    }
+
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes avatar-sheet-up {
+    from {
+      transform: translateY(100%);
+    }
+
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(1rem);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideInLeft {
+    from {
+      transform: translateX(-100%);
+    }
+
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+    }
+
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.2s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+}
+
+/* Staff Dashboard item styles */
+.lk-staff-dashboard-item,
+.lk-staff-dashboard-item * {
+  box-sizing: border-box;
+}
+
+.lk-staff-dashboard-item {
+  display: grid;
+  min-height: 80px;
+  grid-template-columns: 52px minmax(0, 1fr) 20px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  color: #17191d;
+  text-decoration: none;
+  background: #fff;
+  border: 1px solid #e3e8ec;
+  border-radius: 16px;
+  box-shadow: 0 3px 12px rgba(17, 32, 44, 0.04);
+  direction: inherit;
+}
+
+.lk-staff-dashboard-item__icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  color: #A97E3D;
+  background: #ebf9fd;
+  border: 1px solid #cceef8;
+  border-radius: 15px;
+}
+
+.lk-staff-dashboard-item__copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+  text-align: start;
+}
+
+.lk-staff-dashboard-item__copy strong {
+  color: #16191e;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.lk-staff-dashboard-item__copy small {
+  overflow: hidden;
+  color: #9299a1;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 400;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lk-staff-dashboard-item__arrow {
+  color: #7e8790;
+}
+
+.lk-staff-dashboard-item:hover {
+  border-color: #bfe8f5;
+  background: #fbfeff;
+}
+
+/* Skeleton animation */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 0.5rem;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}

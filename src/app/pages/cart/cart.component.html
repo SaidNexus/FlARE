@@ -1,0 +1,255 @@
+<main class="w-full max-w-7xl min-h-[calc(100vh-86px)] mx-auto px-4 sm:px-7 md:px-6 lg:px-8 xl:px-10 pb-24 text-slate-900 bg-white">
+  <section id="section-cart-heading" data-section-type="summary" class="flex items-center justify-between pb-6 pt-6 sm:pt-10 mb-6 sm:mb-8 border-b border-slate-200">
+    <div>
+      <h1 class="m-0 mb-1 text-[24px] sm:text-[32px] font-black text-slate-900">
+        {{ (isEn() ? config().headerTitleEn : config().headerTitleAr) || config().headerTitle || (isEn() ? 'Shopping Cart' : 'سلة التسوق') }}
+      </h1>
+      <p class="m-0 text-[13px] sm:text-[15px] font-medium text-slate-500">
+        {{ itemCount() }} {{ isEn() ? (itemCount() === 1 ? 'item' : 'items') : (itemCount() === 1 ? 'منتج' : 'منتجات') }}
+      </p>
+    </div>
+
+    @if (config().showContinueShopping) {
+      <a routerLink="/products" class="hidden sm:inline-flex items-center gap-2 text-[14px] font-bold text-flare-gold no-underline transition-colors hover:text-flare-gold-dark group">
+        <span>{{ isEn() ? 'Continue Shopping' : 'متابعة التسوق' }}</span>
+        <svg class="w-[18px] h-[18px] transition-transform rtl:group-hover:-translate-x-1 ltr:group-hover:translate-x-1 rtl:rotate-0 ltr:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      </a>
+    }
+  </section>
+
+  @if (displayItems().length > 0) {
+    <!-- Cart Items List -->
+    <section id="section-cart-items" data-section-type="cart-items" class="flex flex-col gap-3 sm:gap-4 mb-6 sm:mb-8" [attr.aria-label]="isEn() ? 'Shopping cart items' : 'منتجات سلة التسوق'">
+      @for (item of displayItems(); track item.cartItem.product.id + '-' + item.cartItem.size) {
+        @let cartItem = item.cartItem;
+        @let lineTotal = item.price * cartItem.quantity;
+        @let favorite = appState.isFavorite(cartItem.product.id);
+
+        <article class="relative grid grid-cols-[80px_minmax(0,1fr)] sm:grid-cols-[100px_minmax(0,1fr)_auto] gap-3 sm:gap-4 p-3 sm:p-5 bg-white border border-slate-200 rounded-[16px] transition-all hover:border-slate-300 hover:shadow-[0_8px_24px_rgba(21,32,45,0.04)]">
+          @if (config().showProductImage) {
+            <a [routerLink]="['/products', cartItem.product.id]" class="block h-[90px] sm:h-[110px] p-2 bg-slate-50 border border-slate-100 rounded-[12px] overflow-hidden">
+              @if (item.image) {
+                <img [src]="item.image" (error)="onImgError($event)" [alt]="item.name" loading="lazy" decoding="async" class="w-full h-full object-contain mix-blend-multiply transition-transform hover:scale-105" />
+              }
+            </a>
+          }
+
+          <!-- Favorite Button -->
+          <button
+            type="button"
+            class="absolute sm:top-3 rtl:sm:right-3 ltr:sm:left-3 top-3 rtl:left-3 ltr:right-3 flex items-center justify-center w-8 h-8 rounded-full border transition-colors cursor-pointer"
+            [ngClass]="favorite ? 'text-white bg-flare-red border-flare-red shadow-sm' : 'text-slate-400 bg-white border-slate-200 hover:text-flare-red hover:border-flare-red'"
+            (click)="toggleFav(cartItem.product.id)"
+            [attr.aria-label]="favorite ? (isEn() ? 'Remove from favorites' : 'حذف من المفضلة') : (isEn() ? 'Add to favorites' : 'إضافة إلى المفضلة')"
+          >
+            <svg class="w-4 h-4 stroke-2" [attr.fill]="favorite ? 'currentColor' : 'none'" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
+
+          <!-- Details -->
+          <div class="flex flex-col rtl:pr-1 ltr:pl-1 pt-1 sm:pt-2 min-w-0 max-w-[calc(100%-36px)] sm:max-w-none">
+            <a [routerLink]="['/products', cartItem.product.id]" class="no-underline group">
+              <h2 class="m-0 mb-1.5 text-[14px] sm:text-[16px] font-bold text-slate-800 leading-snug line-clamp-2 break-words transition-colors group-hover:text-flare-gold">
+                {{ item.name }}
+              </h2>
+            </a>
+
+            <div class="flex flex-col gap-1 mb-2">
+              <p class="flex items-center gap-1.5 m-0 text-[12px] font-medium text-slate-500">
+                <span class="whitespace-nowrap">{{ isEn() ? 'Size:' : 'الحجم:' }}</span>
+                <strong class="text-slate-800 bg-slate-100 px-1.5 py-0.5 rounded whitespace-nowrap">{{ cartItem.size }}</strong>
+              </p>
+            </div>
+
+            <div class="flex flex-wrap items-baseline gap-2 mt-auto">
+              <span class="flex items-baseline gap-[3px] whitespace-nowrap">
+                <strong class="text-[18px] sm:text-[20px] font-black text-slate-900 leading-none">{{ item.price }}</strong>
+                <span class="text-[12px] font-bold text-slate-600">{{ currencyLabel() }}</span>
+              </span>
+              @if (config().showOldPrice && item.oldPrice && item.oldPrice > item.price) {
+                <del class="text-[12px] font-medium text-slate-400">{{ item.oldPrice }} {{ currencyLabel() }}</del>
+              }
+            </div>
+
+            @if (cartItem.quantity > 1) {
+              <small class="mt-1 text-[11px] font-bold text-flare-gold">{{ isEn() ? 'Total: ' : 'المجموع: ' }}{{ lineTotal }} {{ currencyLabel() }}</small>
+            }
+          </div>
+
+          <!-- Quantity / Delete Column -->
+          <div class="col-span-2 sm:col-span-1 flex items-center justify-between sm:flex-col sm:justify-between rtl:sm:items-end ltr:sm:items-end mt-2 sm:mt-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+            @if (config().showQuantityControls) {
+              <div class="flex items-center h-[36px] px-1 bg-slate-50 border border-slate-200 rounded-lg" [attr.aria-label]="isEn() ? 'Change quantity' : 'تغيير الكمية'">
+                <button
+                  type="button"
+                  class="flex items-center justify-center w-7 h-7 text-slate-500 bg-white rounded cursor-pointer transition-colors hover:text-flare-gold hover:shadow-sm"
+                  (click)="updateQty(cartItem.product.id, cartItem.size, cartItem.quantity - 1)"
+                  [attr.aria-label]="isEn() ? 'Decrease quantity' : 'تقليل الكمية'"
+                >
+                  −
+                </button>
+                <span class="w-8 text-center text-[14px] font-bold text-slate-900">{{ cartItem.quantity }}</span>
+                <button
+                  type="button"
+                  class="flex items-center justify-center w-7 h-7 text-slate-500 bg-white rounded cursor-pointer transition-colors hover:text-flare-gold hover:shadow-sm"
+                  (click)="updateQty(cartItem.product.id, cartItem.size, cartItem.quantity + 1)"
+                  [attr.aria-label]="isEn() ? 'Increase quantity' : 'زيادة الكمية'"
+                >
+                  +
+                </button>
+              </div>
+            }
+
+            @if (config().showRemoveButton) {
+              <button
+                type="button"
+                class="flex items-center gap-1.5 h-8 px-2.5 text-[12px] font-bold text-slate-400 bg-transparent border-none rounded cursor-pointer transition-colors hover:text-flare-red hover:bg-flare-red/10"
+                (click)="removeItem(cartItem.product.id, cartItem.size)"
+                [attr.aria-label]="isEn() ? 'Remove item from cart' : 'حذف المنتج من السلة'"
+              >
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                <span class="sm:hidden">{{ isEn() ? 'Remove' : 'حذف' }}</span>
+              </button>
+            }
+          </div>
+        </article>
+      }
+    </section>
+
+    <!-- Pricing & Coupon Section -->
+    <section id="section-cart-summary" data-section-type="summary" class="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-6 lg:gap-12 xl:gap-16 items-start">
+      <!-- Summary Box -->
+      <div class="flex flex-col gap-3 p-5 sm:p-7 bg-slate-50 rounded-[24px]">
+        @if (config().showSubtotal) {
+          <div class="flex justify-between items-center text-[14px] sm:text-[15px] font-bold text-slate-600">
+            <span>{{ isEn() ? 'Subtotal' : 'المجموع الفرعي' }}</span>
+            <strong class="text-slate-900">{{ subtotal() }} {{ currencyLabel() }}</strong>
+          </div>
+        }
+        @if (config().showShipping) {
+          <div class="flex justify-between items-center text-[14px] sm:text-[15px] font-bold text-slate-600">
+            <span>{{ isEn() ? 'Shipping Fee' : 'رسوم الشحن' }}</span>
+            <strong class="text-slate-900">{{ shipping() }} {{ currencyLabel() }}</strong>
+          </div>
+        }
+        @if (config().showDiscount && discount() > 0) {
+          <div class="flex justify-between items-center text-[14px] sm:text-[15px] font-bold text-green-600">
+            <span>{{ isEn() ? 'Discount' : 'خصم' }}</span>
+            <strong>-{{ discount() }} {{ currencyLabel() }}</strong>
+          </div>
+        }
+        @if (config().showTotal) {
+          <div class="flex justify-between items-end mt-2 pt-4 border-t border-slate-200/60">
+            <span class="text-[16px] font-bold text-slate-900">{{ isEn() ? 'Total' : 'الإجمالي' }}</span>
+            <strong class="text-[28px] sm:text-[36px] font-black text-slate-900 leading-none">
+              {{ total() }} <small class="text-[16px] font-bold text-slate-600 mx-1">{{ currencyLabel() }}</small>
+            </strong>
+          </div>
+        }
+        <p class="m-0 mt-1 text-[11px] sm:text-[12px] font-medium text-slate-500">{{ isEn() ? 'VAT included' : 'شامل ضريبة القيمة المضافة' }}</p>
+      </div>
+
+      <!-- Coupon Box -->
+      @if (config().showCouponSection) {
+        <div class="flex flex-col p-5 sm:p-7 bg-white border border-slate-200 rounded-[24px]">
+          <h2 class="flex items-center gap-2 m-0 mb-4 text-[16px] font-extrabold text-slate-900">
+            <svg class="w-5 h-5 text-flare-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            </svg>
+            {{ (isEn() ? config().couponTitleEn : config().couponTitleAr) || config().couponTitle || (isEn() ? 'Discount Code' : 'كود الخصم') }}
+          </h2>
+          <div class="flex h-[52px] bg-slate-50 border border-slate-200 rounded-xl overflow-hidden focus-within:border-slate-400 focus-within:shadow-[0_0_0_3px_rgba(248,250,252,1)] transition-all">
+            <input
+              [ngModel]="couponCode()"
+              (ngModelChange)="couponCode.set($event)"
+              [placeholder]="(isEn() ? config().couponPlaceholderEn : config().couponPlaceholderAr) || config().couponPlaceholder || (isEn() ? 'Enter coupon code' : 'ادخل كود الخصم')"
+              [attr.aria-label]="isEn() ? 'Discount coupon code' : 'كود الخصم'"
+              class="flex-1 min-w-0 h-full px-4 bg-transparent border-none text-[14px] font-bold text-slate-900 placeholder-slate-400 focus:outline-none"
+            />
+            <button
+              type="button"
+              class="h-full px-5 text-[14px] font-bold text-white bg-slate-900 border-none cursor-pointer transition-colors hover:bg-slate-800"
+              (click)="applyCoupon()"
+            >
+              {{ (isEn() ? config().couponButtonTextEn : config().couponButtonTextAr) || config().couponButtonText || (isEn() ? 'Apply' : 'تطبيق') }}
+            </button>
+          </div>
+          <p class="flex items-start gap-1.5 m-0 mt-3 text-[12px] font-medium text-slate-500">
+            <svg class="w-3.5 h-3.5 mt-[2px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            </svg>
+            {{ isEn() ? 'Use a promo code for extra discount (try: FLARE10)' : 'استخدم كود الخصم للحصول على خصم إضافي (جرب: FLARE10)' }}
+          </p>
+        </div>
+      }
+    </section>
+  } @else {
+    <!-- Empty Cart -->
+    <section class="flex flex-col items-center justify-center min-h-[400px] text-center" [attr.aria-label]="isEn() ? 'Cart is empty' : 'السلة فارغة'">
+      @if (config().emptyCartIllustration) {
+        <div class="relative flex items-center justify-center w-[120px] h-[120px] mb-8 bg-slate-50 border border-slate-100 rounded-full" aria-hidden="true">
+          <svg class="w-[54px] h-[54px] text-slate-300 stroke-[1.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <circle cx="9" cy="21" r="1" />
+            <circle cx="20" cy="21" r="1" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+          </svg>
+        </div>
+      }
+
+      <div class="flex flex-col items-center">
+        <h2 class="m-0 mb-3 text-[22px] font-black text-slate-900 leading-tight">
+          {{ (isEn() ? config().emptyCartTextEn : config().emptyCartTextAr) || config().emptyCartText || (isEn() ? 'Your cart is empty' : 'السلة فارغة') }}
+        </h2>
+        <p class="m-0 mb-8 text-[15px] font-medium text-slate-500">
+          {{ isEn() ? 'Start browsing our collection and add your favorite products to cart' : 'ابدأ التسوق وأضف المنتجات التي تناسبك إلى سلتك' }}
+        </p>
+        @if (config().showContinueShopping) {
+          <a routerLink="/products" class="inline-flex items-center gap-2 h-[52px] px-8 text-[15px] font-bold text-white bg-slate-900 rounded-full no-underline transition-all hover:-translate-y-px hover:bg-flare-gold hover:shadow-[0_8px_24px_rgba(169,126,61,0.25)] group">
+            <span>{{ isEn() ? 'Start Shopping' : 'ابدأ التسوق' }}</span>
+            <svg class="w-5 h-5 transition-transform rtl:group-hover:-translate-x-1 ltr:group-hover:translate-x-1 rtl:rotate-0 ltr:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </a>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Value Propositions Bar / Trust Badges -->
+  @if (config().showTrustBadges) {
+    <section id="section-cart-trust" data-section-type="benefits" class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 mt-8 sm:mt-12 pt-8 sm:pt-10 border-t border-slate-100" [attr.aria-label]="isEn() ? 'Shopping guarantees' : 'مميزات التسوق'">
+      @for (badge of config().trustBadges; track badge.id) {
+        <div class="flex flex-col items-center text-center p-3 sm:p-0">
+          <div class="w-10 h-10 mb-3 flex items-center justify-center rounded-full bg-flare-gold/10 text-flare-gold">
+            <svg class="w-5 h-5 stroke-[1.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          </div>
+          <span class="flex flex-col gap-0.5">
+            <strong class="text-[13px] sm:text-[15px] font-bold text-slate-900">{{ isEn() ? (badge.titleEn || badge.titleAr || badge.title) : (badge.titleAr || badge.title) }}</strong>
+            <small class="text-[11px] sm:text-[13px] font-medium text-slate-500">{{ isEn() ? (badge.subtitleEn || badge.subtitleAr || badge.subtitle) : (badge.subtitleAr || badge.subtitle) }}</small>
+          </span>
+        </div>
+      }
+    </section>
+  }
+
+  <!-- Sticky CTA Button -->
+  @if (displayItems().length > 0) {
+    <button
+      type="button"
+      (click)="proceedToCheckout()"
+      class="fixed sm:static bottom-[80px] sm:bottom-auto left-4 right-4 sm:left-auto sm:right-auto z-40 sm:z-auto sm:w-full flex items-center justify-center gap-2 h-[56px] sm:h-[64px] sm:mt-8 text-[16px] sm:text-[18px] font-bold text-white bg-flare-gold border-none rounded-full cursor-pointer shadow-[0_8px_24px_rgba(169,126,61,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(169,126,61,0.4)]"
+    >
+      <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+      </svg>
+      {{ (isEn() ? config().checkoutButtonTextEn : config().checkoutButtonTextAr) || config().checkoutButtonText || (isEn() ? 'Proceed to Checkout' : 'إتمام الطلب') }}
+    </button>
+  }
+</main>

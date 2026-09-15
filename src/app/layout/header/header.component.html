@@ -1,0 +1,299 @@
+<header class="fixed top-0 left-0 right-0 h-[3.75rem] md:h-[4.5rem] bg-white/95 backdrop-blur-md z-[1000] flex items-center px-3 sm:px-6 lg:px-8 border-b border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] transition-all">
+  <div class="flex items-center justify-between w-full max-w-7xl mx-auto gap-4 lg:gap-8">
+    
+    <!-- Right side (in RTL): Brand Logo & Mobile Trigger -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Mobile Menu Button (hamburger) -->
+      <button 
+        type="button" 
+        (click)="openMobileMenu()"
+        class="lg:hidden flex items-center justify-center w-9 h-9 rtl:-mr-1.5 ltr:-ml-1.5 bg-transparent border-none cursor-pointer text-slate-700 hover:text-flare-gold transition-colors duration-200" 
+        [attr.aria-label]="langService.storefrontLang() === 'ar' ? 'القائمة' : 'Menu'"
+      >
+        <svg class="w-6 h-6 stroke-[1.75]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+      </button>
+
+      <!-- Brand Logo -->
+      <a 
+        routerLink="/" 
+        class="flex flex-col items-start no-underline gap-0 leading-none group transition-transform duration-200 hover:scale-[1.02]"
+      >
+        <span class="text-[1.65rem] md:text-[1.85rem] lg:text-[2rem] font-black tracking-[0.08em] font-[system-ui,-apple-system,sans-serif] leading-[0.9]">
+          <span class="text-red-500">FLA</span>
+          <span class="text-black">RE</span>
+        </span>
+        <span class="text-[0.45rem] lg:text-[0.55rem] font-bold text-neutral-800 tracking-[0.12em] mt-[3px] uppercase">
+          - INNOVATIVE HARMONY -
+        </span>
+      </a>
+    </div>
+
+    <!-- Center (Desktop Navigation Links) -->
+    <nav class="hidden lg:flex items-center gap-6 xl:gap-9" [attr.aria-label]="langService.storefrontLang() === 'ar' ? 'التنقل الرئيسي' : 'Main Navigation'">
+      @for (link of desktopNavLinks; track link.to) {
+        <a
+          [routerLink]="link.to"
+          routerLinkActive="text-flare-gold font-bold after:scale-x-100!"
+          [routerLinkActiveOptions]="{ exact: link.to === '/' }"
+          class="relative text-[14px] xl:text-[15px] font-semibold text-slate-700 hover:text-flare-gold transition-colors duration-200 py-1 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-flare-gold after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-200 after:origin-right"
+        >
+          {{ link.label }}
+        </a>
+      }
+    </nav>
+
+    <!-- Left side (in RTL): Action Icons -->
+    <div class="flex items-center gap-1 sm:gap-2 md:gap-3">
+      <!-- Search Button -->
+      <a 
+        routerLink="/search" 
+        class="flex items-center justify-center w-9 h-9 md:w-10 md:h-10 text-slate-700 rounded-full hover:bg-slate-50 hover:text-flare-gold transition-all duration-200 relative cursor-pointer no-underline" 
+        [attr.aria-label]="langService.storefrontLang() === 'ar' ? 'بحث' : 'Search'"
+      >
+        <svg class="w-5 h-5 md:w-5.5 md:h-5.5 stroke-[1.8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+        </svg>
+      </a>
+      
+      <!-- Account Button -->
+      <a 
+        [routerLink]="appState.user() ? '/profile' : '/login'" 
+        class="flex items-center justify-center w-9 h-9 md:w-10 md:h-10 text-slate-700 rounded-full hover:bg-slate-50 hover:text-flare-gold transition-all duration-200 relative cursor-pointer no-underline" 
+        [attr.aria-label]="langService.storefrontLang() === 'ar' ? 'الحساب' : 'Account'"
+      >
+        <svg class="w-5 h-5 md:w-5.5 md:h-5.5 stroke-[1.8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+        </svg>
+      </a>
+      
+      <!-- Cart Button with Pill Badge -->
+      <a 
+        routerLink="/cart" 
+        class="flex items-center justify-center w-9 h-9 md:w-10 md:h-10 text-slate-700 rounded-full hover:bg-slate-50 hover:text-flare-gold transition-all duration-200 relative cursor-pointer no-underline" 
+        [attr.aria-label]="langService.storefrontLang() === 'ar' ? 'السلة' : 'Cart'"
+      >
+        <svg class="w-5 h-5 md:w-5.5 md:h-5.5 stroke-[1.8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+        </svg>
+        @if (appState.cartCount() > 0) {
+          <span class="absolute -top-0.5 -right-0.5 bg-flare-red text-white rounded-full min-w-[1.25rem] h-5 px-1 flex items-center justify-center text-[0.68rem] font-black leading-none shadow-sm">
+            {{ appState.cartCount() }}
+          </span>
+        }
+      </a>
+
+      <!-- Language Switcher Button -->
+      <button
+        type="button"
+        class="lk-lang-btn"
+        (click)="toggleLanguage()"
+        [attr.aria-label]="langService.storefrontLang() === 'ar' ? 'Switch to English' : 'التحويل إلى العربية'"
+        [title]="langService.storefrontLang() === 'ar' ? 'Switch to English' : 'التحويل إلى العربية'"
+      >
+        <span class="lk-lang-btn__icon" aria-hidden="true">
+          <svg class="w-4 h-4 stroke-[1.8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+          </svg>
+        </span>
+        <span class="lk-lang-btn__text">
+          {{ langService.storefrontLang() === 'ar' ? 'EN' : 'عربي' }}
+        </span>
+      </button>
+
+      <!-- Desktop More Menu Trigger -->
+      <button 
+        type="button" 
+        (click)="openDesktopMenu()"
+        class="hidden lg:flex items-center justify-center w-9 h-9 md:w-10 md:h-10 text-slate-500 rounded-full hover:bg-slate-100 hover:text-slate-900 transition-colors border-none bg-transparent cursor-pointer"
+        [attr.aria-label]="langService.storefrontLang() === 'ar' ? 'المزيد' : 'More'"
+      >
+        <svg class="w-5 h-5 stroke-[1.8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Slide-Over Navigation Drawer -->
+@if (menuOpen()) {
+  <div
+    class="fixed inset-0 z-[1000] bg-black/40 backdrop-blur-sm animate-fade-in"
+    (click)="closeMenu()"
+  >
+    <aside
+      class="absolute top-0 bottom-0 w-full max-w-[380px] h-full bg-slate-50 shadow-2xl flex flex-col z-10 overflow-hidden border-slate-200"
+      [ngClass]="menuSide() === 'left' ? 'left-0 border-r animate-slide-in-left' : 'right-0 border-l animate-slide-in-right'"
+      (click)="$event.stopPropagation()"
+      [attr.aria-label]="langService.storefrontLang() === 'ar' ? 'القائمة الجانبية' : 'Side Navigation'"
+    >
+      <!-- Drawer Header -->
+      <div class="flex items-center justify-between p-4 border-b border-slate-200 bg-white">
+        <span class="text-lg font-black text-slate-900 tracking-wider">
+          <span class="text-flare-red">FLA</span>RE
+        </span>
+        <button
+          type="button"
+          (click)="closeMenu()"
+          class="flex items-center justify-center w-8 h-8 rounded-full text-slate-500 hover:bg-slate-100 transition-colors cursor-pointer border-none bg-transparent"
+          [attr.aria-label]="langService.storefrontLang() === 'ar' ? 'إغلاق' : 'Close'"
+        >
+          <svg class="w-5 h-5 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Drawer Content -->
+      <div class="flex-1 overflow-y-auto p-4">
+        <!-- Language Switcher in Drawer -->
+        <div class="p-2 mb-3 bg-white border border-slate-200 rounded-xl shadow-xs">
+          <button
+            type="button"
+            (click)="toggleLanguage(); closeMenu()"
+            class="w-full flex items-center justify-between p-2 bg-transparent border-0 cursor-pointer text-start"
+            [attr.aria-label]="langService.storefrontLang() === 'ar' ? 'Switch to English' : 'التحويل إلى العربية'"
+          >
+            <div class="flex items-center gap-3">
+              <span class="grid place-items-center w-9 h-9 text-flare-gold bg-flare-cream border border-flare-gold/20 rounded-xl">
+                <svg class="w-5 h-5 stroke-[1.8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+                </svg>
+              </span>
+              <div class="flex flex-col">
+                <strong class="text-sm font-bold text-slate-800">{{ langService.storefrontLang() === 'ar' ? 'اللغة' : 'Language' }}</strong>
+                <small class="text-xs text-slate-500">{{ langService.storefrontLang() === 'ar' ? 'العربية (الحالية)' : 'English (Current)' }}</small>
+              </div>
+            </div>
+            <span class="lk-lang-pill">
+              {{ langService.storefrontLang() === 'ar' ? 'English' : 'العربية' }}
+            </span>
+          </button>
+        </div>
+
+        @if (showStaffItem) {
+          <div class="mb-3">
+            <a
+              [routerLink]="staffDestination"
+              (click)="closeMenu()"
+              class="lk-staff-dashboard-item"
+            >
+              <span class="lk-staff-dashboard-item__icon" aria-hidden="true">
+                <svg class="w-6 h-6 stroke-[1.8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                </svg>
+              </span>
+              <span class="lk-staff-dashboard-item__copy text-start rtl:text-right ltr:text-left">
+                <strong>{{ langService.storefrontLang() === 'ar' ? 'لوحة التحكم' : 'Control Panel' }}</strong>
+                <small>{{ appState.isAdmin() ? (langService.storefrontLang() === 'ar' ? 'إدارة الطلبات والمنتجات' : 'Orders & Products Management') : (langService.storefrontLang() === 'ar' ? 'تسجيل دخول الموظفين' : 'Staff Login') }}</small>
+              </span>
+              <svg class="w-4 h-4 text-slate-400 stroke-2 lk-staff-dashboard-item__arrow rtl:rotate-0 ltr:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+            </a>
+          </div>
+        }
+
+        <!-- Shopping links -->
+        <nav class="flex flex-col gap-2.5" [attr.aria-label]="langService.storefrontLang() === 'ar' ? 'روابط التسوق' : 'Shopping Links'">
+          @for (item of shoppingMenuItems; track item.to) {
+            <a
+              [routerLink]="item.to"
+              (click)="closeMenu()"
+              class="group grid grid-cols-[45px_1fr_20px] sm:grid-cols-[48px_1fr_22px] items-center gap-3 min-h-[68px] sm:min-h-[72px] p-2.5 sm:p-3 text-slate-900 bg-white border border-slate-200 rounded-xl shadow-sm transition-all hover:-translate-y-[1px] hover:border-flare-gold/60 hover:shadow-md no-underline"
+            >
+              <span class="grid place-items-center w-[43px] h-[43px] sm:w-[46px] sm:h-[46px] text-flare-gold bg-flare-cream border border-flare-gold/20 rounded-[13px]" aria-hidden="true">
+                @switch (item.iconName) {
+                  @case ('home') {
+                    <svg class="w-[22px] h-[22px] stroke-[1.75]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                    </svg>
+                  }
+                  @case ('grid') {
+                    <svg class="w-[22px] h-[22px] stroke-[1.75]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                    </svg>
+                  }
+                  @case ('shopping-bag') {
+                    <svg class="w-[22px] h-[22px] stroke-[1.75]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
+                    </svg>
+                  }
+                  @case ('heart') {
+                    <svg class="w-[22px] h-[22px] stroke-[1.75]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                    </svg>
+                  }
+                  @case ('shopping-cart') {
+                    <svg class="w-[22px] h-[22px] stroke-[1.75]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                    </svg>
+                  }
+                }
+              </span>
+              <span class="flex flex-col min-w-0 gap-1 text-start rtl:text-right ltr:text-left">
+                <strong class="text-slate-900 text-sm font-black leading-snug truncate">{{ item.title }}</strong>
+                <small class="text-slate-500 text-[11px] font-medium leading-snug truncate">{{ item.description }}</small>
+              </span>
+              <svg class="w-4 h-4 sm:w-[18px] sm:h-[18px] text-slate-400 stroke-2 rtl:rotate-0 ltr:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+            </a>
+          }
+        </nav>
+
+        <div class="h-px mx-1 my-4 bg-slate-200" role="separator"></div>
+
+        <!-- Help & Info links -->
+        <nav class="flex flex-col gap-2.5" [attr.aria-label]="langService.storefrontLang() === 'ar' ? 'روابط الدعم والمعلومات' : 'Help & Information'">
+          @for (item of helpMenuItems; track item.to) {
+            <a
+              [routerLink]="item.to"
+              (click)="closeMenu()"
+              class="group grid grid-cols-[45px_1fr_20px] sm:grid-cols-[48px_1fr_22px] items-center gap-3 min-h-[68px] sm:min-h-[72px] p-2.5 sm:p-3 text-slate-900 bg-white border border-slate-200 rounded-xl shadow-sm transition-all hover:-translate-y-[1px] hover:border-flare-gold/60 hover:shadow-md no-underline"
+            >
+              <span class="grid place-items-center w-[43px] h-[43px] sm:w-[46px] sm:h-[46px] text-flare-gold bg-flare-cream border border-flare-gold/20 rounded-[13px]" aria-hidden="true">
+                @switch (item.iconName) {
+                  @case ('package') {
+                    <svg class="w-[22px] h-[22px] stroke-[1.75]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                    </svg>
+                  }
+                  @case ('help') {
+                    <svg class="w-[22px] h-[22px] stroke-[1.75]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+                    </svg>
+                  }
+                  @case ('shield') {
+                    <svg class="w-[22px] h-[22px] stroke-[1.75]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                    </svg>
+                  }
+                  @case ('file') {
+                    <svg class="w-[22px] h-[22px] stroke-[1.75]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                    </svg>
+                  }
+                  @case ('user') {
+                    <svg class="w-[22px] h-[22px] stroke-[1.75]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                    </svg>
+                  }
+                }
+              </span>
+              <span class="flex flex-col min-w-0 gap-1 text-start rtl:text-right ltr:text-left">
+                <strong class="text-slate-900 text-sm font-black leading-snug truncate">{{ item.title }}</strong>
+                <small class="text-slate-500 text-[11px] font-medium leading-snug truncate">{{ item.description }}</small>
+              </span>
+              <svg class="w-4 h-4 sm:w-[18px] sm:h-[18px] text-slate-400 stroke-2 rtl:rotate-0 ltr:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+            </a>
+          }
+        </nav>
+      </div>
+    </aside>
+  </div>
+}

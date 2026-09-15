@@ -1,0 +1,46 @@
+<div class="bg-[#FCF8F5] min-h-[calc(100vh-86px)] px-4 sm:px-7 md:px-8 lg:px-16 pt-12 pb-24 max-w-7xl mx-auto">
+  <div class="text-center mb-12">
+    <div class="inline-flex items-center justify-center w-16 h-16 bg-[#f5e4d0] rounded-full text-[#A97E3D] mb-4">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+        <line x1="12" x2="12.01" y1="17" y2="17"/>
+      </svg>
+    </div>
+    <h1 class="text-3xl font-[800] text-[#1a1a1a]">{{ title }}</h1>
+    <p class="text-[#888888] mt-2">{{ subtitle }}</p>
+  </div>
+
+  <div class="bg-white border border-[#f0eae5] rounded-xl p-2 md:p-4 shadow-sm">
+    @for (faq of faqs; track faq.q; let idx = $index) {
+      <div class="border-b border-[#f0eae5] last:border-b-0">
+        <button
+          type="button"
+          (click)="toggleFaq(idx)"
+          class="w-full rtl:text-right ltr:text-left py-4 px-4 flex items-center justify-between font-bold text-[#1a1a1a] hover:bg-[#FCF8F5] transition-colors rounded-lg cursor-pointer"
+        >
+          <span>{{ faq.q }}</span>
+          <svg 
+            class="w-5 h-5 text-[#A97E3D] transition-transform duration-200 shrink-0 mx-2" 
+            [class.rotate-180]="openIndex === idx"
+            fill="none" 
+            stroke="currentColor" 
+            stroke-width="2" 
+            viewBox="0 0 24 24"
+          >
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+        </button>
+        <div 
+          class="overflow-hidden transition-all duration-300"
+          [style.max-height]="openIndex === idx ? '24rem' : '0'"
+          [class.pb-4]="openIndex === idx"
+        >
+          <p class="px-4 text-[#666666] leading-relaxed text-sm md:text-base m-0 rtl:text-right ltr:text-left">
+            {{ faq.a }}
+          </p>
+        </div>
+      </div>
+    }
+  </div>
+</div>

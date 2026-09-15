@@ -1,0 +1,66 @@
+<a
+  [routerLink]="['/products', item().productId]"
+  class="group relative flex flex-col min-w-0 h-full overflow-hidden text-slate-900 bg-white border border-slate-100/90 rounded-2xl sm:rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_40px_rgba(15,23,42,0.08)] hover:border-flare-gold/40 hover:-translate-y-1.5 transition-all duration-300 no-underline"
+>
+  @if (item().discount) {
+    <span class="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-10 inline-flex items-center px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-xs font-black text-white leading-none bg-gradient-to-r from-red-600 to-rose-500 rounded-full shadow-sm">
+      -{{ item().discount }}%
+    </span>
+  }
+
+  <div class="relative aspect-square w-full bg-gradient-to-b from-slate-50/70 to-slate-100/30 group-hover:from-amber-50/30 group-hover:to-white overflow-hidden p-2.5 sm:p-4 lg:p-5 flex items-center justify-center transition-colors duration-300">
+    <img
+      [src]="cardImage"
+      (error)="onImgError($event)"
+      [alt]="item().name"
+      class="w-full h-full object-contain transition-transform duration-500 ease-out group-hover:scale-108"
+      width="800"
+      height="650"
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
+
+  <div class="flex flex-col flex-1 p-3 sm:p-4 text-start rtl:text-right ltr:text-left">
+    <h3 class="m-0 mb-1.5 text-xs sm:text-sm md:text-base font-bold text-slate-800 group-hover:text-flare-gold leading-snug line-clamp-2 min-h-[2.5rem] transition-colors">
+      {{ displayName }}
+    </h3>
+
+    <div class="flex flex-wrap items-baseline gap-1.5 sm:gap-2 mb-2.5">
+      <strong class="text-sm sm:text-base md:text-lg font-black text-slate-900 whitespace-nowrap">
+        {{ item().price }} <span class="text-[11px] sm:text-xs font-bold text-slate-500">{{ isEn ? 'SAR' : 'ر.س' }}</span>
+      </strong>
+      @if (item().oldPrice) {
+        <del class="text-[11px] sm:text-xs font-medium text-slate-400 whitespace-nowrap">
+          {{ item().oldPrice }} {{ isEn ? 'SAR' : 'ر.س' }}
+        </del>
+      }
+    </div>
+
+    <div class="flex items-center justify-between mt-auto pt-2.5 border-t border-slate-100/90">
+      <div class="flex items-center gap-1">
+        <span class="flex text-amber-400" [attr.aria-label]="(isEn ? 'Rating ' + item().rating + ' of 5' : 'التقييم ' + item().rating + ' من 5')">
+          @for (star of stars; track star) {
+            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-current" viewBox="0 0 24 24">
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+            </svg>
+          }
+        </span>
+        <small class="text-[10px] sm:text-[11px] font-medium text-slate-400">({{ item().reviews }})</small>
+      </div>
+
+      <button
+        type="button"
+        (click)="handleAddToCart($event)"
+        class="grid place-items-center w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 text-white bg-slate-900 group-hover:bg-flare-gold rounded-full cursor-pointer transition-all duration-300 shadow-sm hover:scale-105 active:scale-95 focus-visible:outline-none flex-shrink-0"
+        [attr.aria-label]="(isEn ? 'Add ' + item().name + ' to cart' : 'أضف ' + item().name + ' إلى السلة')"
+      >
+        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <circle cx="9" cy="21" r="1" />
+          <circle cx="20" cy="21" r="1" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</a>

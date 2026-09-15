@@ -1,0 +1,331 @@
+@if (isWalletFlow() && walletSession()) {
+  <app-wallet-payment-flow
+    [session]="walletSession()!"
+    (back)="onWalletBack()"
+    (complete)="onWalletComplete()"
+  ></app-wallet-payment-flow>
+} @else {
+  <main class="w-full max-w-7xl mx-auto px-5 sm:px-7 md:px-6 lg:px-8 xl:px-10 pt-6 pb-7 text-slate-900 font-sans">
+    <section id="section-checkout-header" data-section-type="summary" class="flex flex-col sm:flex-row items-start justify-between gap-6 min-h-[78px] mb-6">
+      <div class="pt-px rtl:text-right ltr:text-left">
+        <h1 class="m-0 text-slate-900 text-[27px] font-black leading-[1.22] tracking-[-0.35px]">{{ headerTitle() }}</h1>
+        <p class="mt-1.5 text-slate-500 text-[14px] font-medium leading-[1.5]">{{ headerSubtitle() }}</p>
+      </div>
+
+      <a routerLink="/cart" class="inline-flex items-center gap-2.5 mt-4 sm:mt-0 text-flare-gold text-[13px] font-bold leading-none hover:text-flare-gold/80 transition-colors">
+        <svg class="w-5 h-5 rtl:rotate-0 ltr:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        {{ emptyStateCta() || (isEn() ? 'Return to Cart' : 'عودة إلى السلة') }}
+      </a>
+    </section>
+
+    @if (appState.cart().length === 0) {
+      <section class="flex flex-col items-center justify-center min-h-[400px] text-center" [attr.aria-label]="isEn() ? 'Cart is empty' : 'السلة فارغة'">
+        <div class="w-20 h-20 mb-6 bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center text-slate-400">
+          <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+        </div>
+        <h2 class="m-0 mb-2 text-xl font-bold text-slate-800">{{ emptyStateTitle() }}</h2>
+        <p class="m-0 mb-6 text-sm text-slate-500">{{ emptyStateText() }}</p>
+        <a routerLink="/cart" class="px-6 py-2.5 bg-slate-900 text-white rounded-full font-bold hover:bg-slate-800 transition-colors">
+          {{ emptyStateCta() }}
+        </a>
+      </section>
+    } @else {
+      <div class="grid grid-cols-1 md:grid-cols-[1.6fr_1fr] gap-6 lg:gap-12 xl:gap-16 items-start w-full">
+        <!-- Form Column -->
+        <form class="w-full h-full p-5 bg-white border border-slate-200 rounded-[15px] shadow-[0_1px_4px_rgba(20,25,35,0.025)]" (ngSubmit)="handleSubmit($event)">
+          <!-- Customer Details -->
+          <section id="section-checkout-customer" data-section-type="customer-info" class="flex flex-col">
+            <div class="flex items-center justify-start gap-2 mb-4">
+              <span class="inline-flex items-center justify-center w-[26px] h-[26px] shrink-0 text-white bg-gradient-to-b from-flare-gold/80 to-flare-gold rounded-full text-[11px] font-black leading-none shadow-sm">1</span>
+              <h2 class="m-0 text-slate-900 text-[15px] font-black leading-[1.3]">{{ customerInfoTitle() }}</h2>
+            </div>
+
+            <!-- Full Name -->
+            <label class="flex flex-col gap-1 mb-2.5 group">
+              <span class="text-slate-900 text-[14px] font-black leading-[1.35]">{{ isEn() ? 'Full Name' : 'الاسم الكامل' }} <b class="text-flare-red font-bold">*</b></span>
+              <div class="flex items-center h-10 gap-2.5 px-3 bg-white border border-slate-200 rounded-lg group-focus-within:border-flare-gold group-focus-within:ring-2 group-focus-within:ring-flare-gold/10 transition-all">
+                <input
+                  type="text"
+                  class="w-full min-w-0 text-slate-600 text-xs font-medium bg-transparent border-0 outline-none rtl:text-right ltr:text-left placeholder:text-slate-400"
+                  [ngModel]="fullName()"
+                  (ngModelChange)="fullName.set($event)"
+                  name="fullName"
+                  [placeholder]="isEn() ? 'Enter your full name' : 'أدخل اسمك الكامل'"
+                  required
+                />
+              </div>
+            </label>
+
+            <!-- Phone -->
+            <label class="flex flex-col gap-1 mb-2.5 group">
+              <span class="text-slate-900 text-[14px] font-black leading-[1.35]">{{ isEn() ? 'Phone Number' : 'رقم الهاتف' }} <b class="text-flare-red font-bold">*</b></span>
+              <div class="flex items-center h-10 gap-2.5 px-3 bg-white border border-slate-200 rounded-lg group-focus-within:border-flare-gold group-focus-within:ring-2 group-focus-within:ring-flare-gold/10 transition-all">
+                <input
+                  type="tel"
+                  class="w-full min-w-0 text-slate-600 text-xs font-medium bg-transparent border-0 outline-none rtl:text-right ltr:text-left placeholder:text-slate-400"
+                  [ngModel]="phone()"
+                  (ngModelChange)="phone.set($event)"
+                  name="phone"
+                  placeholder="05XXXXXXXX"
+                  required
+                />
+              </div>
+            </label>
+
+            <!-- City and Area -->
+            <div class="grid grid-cols-2 gap-3 mb-2.5">
+              <label class="flex flex-col gap-1 group">
+                <span class="text-slate-900 text-[14px] font-black leading-[1.35]">{{ isEn() ? 'City' : 'المدينة' }}</span>
+                <div class="flex items-center h-10 gap-2.5 px-3 bg-white border border-slate-200 rounded-lg group-focus-within:border-flare-gold group-focus-within:ring-2 group-focus-within:ring-flare-gold/10 transition-all">
+                  <select
+                    class="w-full h-full min-w-0 p-0 text-slate-600 text-xs font-medium bg-transparent border-0 outline-none rtl:text-right ltr:text-left cursor-pointer"
+                    [ngModel]="city()"
+                    (ngModelChange)="city.set($event)"
+                    name="city"
+                  >
+                    <option value="">{{ isEn() ? 'Select City' : 'اختر المدينة' }}</option>
+                    @for (option of cityOptions(); track option) {
+                      <option [value]="option">{{ option }}</option>
+                    }
+                  </select>
+                </div>
+              </label>
+
+              <label class="flex flex-col gap-1 group">
+                <span class="text-slate-900 text-[14px] font-black leading-[1.35]">{{ isEn() ? 'Area' : 'المنطقة' }}</span>
+                <div class="flex items-center h-10 gap-2.5 px-3 bg-white border border-slate-200 rounded-lg group-focus-within:border-flare-gold group-focus-within:ring-2 group-focus-within:ring-flare-gold/10 transition-all">
+                  <select
+                    class="w-full h-full min-w-0 p-0 text-slate-600 text-xs font-medium bg-transparent border-0 outline-none rtl:text-right ltr:text-left cursor-pointer"
+                    [ngModel]="area()"
+                    (ngModelChange)="area.set($event)"
+                    name="area"
+                  >
+                    <option value="">{{ isEn() ? 'Select Area' : 'اختر المنطقة' }}</option>
+                    @for (option of areaOptions(); track option) {
+                      <option [value]="option">{{ option }}</option>
+                    }
+                  </select>
+                </div>
+              </label>
+            </div>
+
+            <!-- Address -->
+            <label class="flex flex-col gap-1 mb-2.5 group">
+              <span class="text-slate-900 text-[14px] font-black leading-[1.35]">{{ isEn() ? 'Detailed Address' : 'العنوان بالتفصيل' }} <b class="text-flare-red font-bold">*</b></span>
+              <div class="min-h-[68px] px-3 py-2 bg-white border border-slate-200 rounded-lg group-focus-within:border-flare-gold group-focus-within:ring-2 group-focus-within:ring-flare-gold/10 transition-all">
+                <textarea
+                  rows="3"
+                  class="block w-full min-h-[46px] min-w-0 text-slate-600 text-xs font-medium bg-transparent border-0 outline-none resize-none rtl:text-right ltr:text-left leading-relaxed placeholder:text-slate-400"
+                  [ngModel]="address()"
+                  (ngModelChange)="address.set($event)"
+                  name="address"
+                  [placeholder]="isEn() ? 'Enter your detailed address (street, landmark, building number...)' : 'اكتب عنوانك بالتفصيل (الشارع، المعلم، رقم المنزل...)'"
+                  required
+                ></textarea>
+              </div>
+            </label>
+
+            <!-- Notes -->
+            <label class="flex flex-col gap-1 group">
+              <span class="text-slate-900 text-[14px] font-black leading-[1.35]">{{ isEn() ? 'Order Notes' : 'ملاحظات الطلب' }} <em class="text-slate-500 not-italic font-medium text-xs">{{ isEn() ? '(Optional)' : '(اختياري)' }}</em></span>
+              <div class="min-h-[50px] px-3 py-2 bg-white border border-slate-200 rounded-lg group-focus-within:border-flare-gold group-focus-within:ring-2 group-focus-within:ring-flare-gold/10 transition-all">
+                <textarea
+                  rows="2"
+                  class="block w-full min-h-[28px] min-w-0 text-slate-600 text-xs font-medium bg-transparent border-0 outline-none resize-none rtl:text-right ltr:text-left leading-relaxed placeholder:text-slate-400"
+                  [ngModel]="notes()"
+                  (ngModelChange)="notes.set($event)"
+                  name="notes"
+                  [placeholder]="isEn() ? 'Write any special notes for your order' : 'اكتب أي ملاحظات خاصة بالطلب'"
+                ></textarea>
+              </div>
+            </label>
+          </section>
+
+          <!-- Payment Methods -->
+          <section id="section-checkout-payment" data-section-type="payment-info" class="flex flex-col mt-4 pt-4 border-t border-slate-100">
+            <div class="flex items-center justify-start gap-2 mb-4">
+              <span class="inline-flex items-center justify-center w-[26px] h-[26px] shrink-0 text-white bg-gradient-to-b from-flare-gold/80 to-flare-gold rounded-full text-[11px] font-black leading-none shadow-sm">2</span>
+              <h2 class="m-0 text-slate-900 text-[15px] font-black leading-[1.3]">{{ paymentInfoTitle() }}</h2>
+            </div>
+
+            <!-- COD -->
+            <label
+              class="relative flex items-center h-[58px] gap-2.5 px-3 bg-white border rounded-lg cursor-pointer transition-all mb-2.5"
+              [ngClass]="paymentMethod() === 'cod' ? 'border-[#BE9048] ring-1 ring-flare-gold/10' : 'border-slate-200'"
+            >
+              <input type="radio" name="payment" class="absolute opacity-0" [checked]="paymentMethod() === 'cod'" (change)="paymentMethod.set('cod')" />
+              <div class="flex-1 flex flex-col items-start gap-0.5 rtl:text-right ltr:text-left min-w-0">
+                <strong class="text-slate-900 text-sm font-bold">{{ isEn() ? 'Cash on Delivery' : 'الدفع عند الاستلام' }}</strong>
+                <small class="text-slate-500 text-[11px]">{{ isEn() ? 'Pay upon receiving your order' : 'ادفع عند استلام الطلب' }}</small>
+              </div>
+            </label>
+
+            <!-- Bank -->
+            <label
+              class="relative flex items-center h-[58px] gap-2.5 px-3 bg-white border rounded-lg cursor-pointer transition-all mb-2.5"
+              [ngClass]="paymentMethod() === 'bank' ? 'border-[#BE9048] ring-1 ring-flare-gold/10' : 'border-slate-200'"
+            >
+              <input type="radio" name="payment" class="absolute opacity-0" [checked]="paymentMethod() === 'bank'" (change)="paymentMethod.set('bank')" />
+              <div class="flex-1 flex flex-col items-start gap-0.5 rtl:text-right ltr:text-left min-w-0">
+                <strong class="text-slate-900 text-sm font-bold">{{ isEn() ? 'Bank Transfer' : 'تحويل بنكي' }}</strong>
+                <small class="text-slate-500 text-[11px]">{{ isEn() ? 'Pay via bank transfer' : 'ادفع عن طريق التحويل البنكي' }}</small>
+              </div>
+            </label>
+
+            <!-- Bank Transfer Details Subform -->
+            @if (paymentMethod() === 'bank') {
+              <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl mb-3">
+                <h3 class="m-0 mb-3 text-slate-900 text-sm font-bold text-center">{{ isEn() ? 'Bank Transfer Details' : 'بيانات التحويل البنكي' }}</h3>
+                <dl class="flex flex-col gap-2 p-3 bg-white border border-slate-200 rounded-lg text-xs">
+                  <div class="flex justify-between border-b pb-1">
+                    <dt class="text-slate-500">{{ isEn() ? 'Bank Name' : 'اسم البنك' }}</dt>
+                    <dd class="m-0 font-bold">{{ isEn() ? 'Al Rajhi Bank' : 'بنك الراجحي' }}</dd>
+                  </div>
+                  <div class="flex justify-between border-b pb-1">
+                    <dt class="text-slate-500">{{ isEn() ? 'Beneficiary' : 'المستفيد' }}</dt>
+                    <dd class="m-0 font-bold">{{ isEn() ? 'FLARE Store Co.' : 'متجر FLARE للتجارة' }}</dd>
+                  </div>
+                  <div class="flex justify-between border-b pb-1">
+                    <dt class="text-slate-500">{{ isEn() ? 'Account Number' : 'الحساب' }}</dt>
+                    <dd class="m-0 font-bold font-mono">123608010123456</dd>
+                  </div>
+                  <div class="flex justify-between">
+                    <dt class="text-slate-500">IBAN</dt>
+                    <dd class="m-0 font-bold font-mono">SA4480000123608010123456</dd>
+                  </div>
+                </dl>
+
+                <div class="mt-3">
+                  <input
+                    type="file"
+                    accept=".jpg,.jpeg,.png,.pdf"
+                    class="block w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-flare-gold file:text-white hover:file:bg-flare-gold-dark cursor-pointer"
+                    (change)="handleBankReceiptSelected($event)"
+                  />
+                  @if (bankReceipt()) {
+                    <p class="text-xs text-green-600 font-bold mt-1">✓ {{ isEn() ? 'Attached: ' : 'تم إرفاق: ' }}{{ bankReceipt()?.name }}</p>
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- Wallet -->
+            <label
+              class="relative flex items-center h-[58px] gap-2.5 px-3 bg-white border rounded-lg cursor-pointer transition-all"
+              [ngClass]="paymentMethod() === 'wallet' ? 'border-[#BE9048] ring-1 ring-flare-gold/10' : 'border-slate-200'"
+            >
+              <input type="radio" name="payment" class="absolute opacity-0" [checked]="paymentMethod() === 'wallet'" (change)="paymentMethod.set('wallet')" />
+              <div class="flex-1 flex flex-col items-start gap-0.5 rtl:text-right ltr:text-left min-w-0">
+                <strong class="text-slate-900 text-sm font-bold">{{ isEn() ? 'Digital Wallet' : 'محفظة إلكترونية' }}</strong>
+                <small class="text-slate-500 text-[11px]">{{ isEn() ? 'Pay using your digital wallet' : 'ادفع باستخدام محفظتك الإلكترونية' }}</small>
+              </div>
+            </label>
+
+            <!-- Wallet Suboptions -->
+            @if (paymentMethod() === 'wallet') {
+              <div class="mt-3 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                <p class="m-0 mb-2 text-xs font-bold text-slate-700">{{ isEn() ? 'Select Wallet:' : 'اختر المحفظة:' }}</p>
+                <div class="grid grid-cols-2 gap-2">
+                  @for (opt of walletOptions(); track opt.id) {
+                    <button
+                      type="button"
+                      class="py-2.5 px-3 rounded-lg border font-bold text-xs cursor-pointer transition-colors"
+                      [ngClass]="walletProvider() === opt.id ? 'bg-slate-900 text-white border-slate-900 shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'"
+                      (click)="walletProvider.set(opt.id)"
+                    >
+                      {{ opt.label }}
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          </section>
+
+          <!-- Submit CTA -->
+          <button
+            type="submit"
+            class="relative flex items-center justify-center w-full h-[58px] gap-4 mt-6 text-white text-[15px] font-black bg-[#BE9048] hover:bg-[#A67935] rounded-[9px] shadow-sm cursor-pointer transition-colors"
+          >
+            {{ paymentMethod() === 'wallet' ? (isEn() ? 'Proceed to E-Payment' : 'متابعة للدفع الإلكتروني') : (isEn() ? 'Confirm Order' : 'تأكيد الطلب') }}
+          </button>
+        </form>
+
+        <!-- Sidebar Summary Column -->
+        <aside class="flex flex-col gap-4">
+          <section id="section-checkout-summary" data-section-type="summary" class="w-full p-5 bg-white border border-slate-200 rounded-[15px] shadow-[0_1px_4px_rgba(20,25,35,0.025)]">
+            <h2 class="m-0 mb-3 text-slate-900 text-[15px] font-black leading-[1.35]">
+              {{ summaryTitle() }} ({{ itemCount() }} {{ isEn() ? 'items' : 'منتجات' }})
+            </h2>
+
+            <div class="flex flex-col divide-y divide-slate-100">
+              @for (item of appState.cart(); track item.product.id + '-' + item.size) {
+                <div class="py-3 flex gap-3 items-center">
+                  <img [src]="getItemImage(item.product)" (error)="onImgError($event)" [alt]="isEn() ? (item.product.nameEn || item.product.nameAr) : item.product.nameAr" class="w-14 h-14 object-contain rounded-lg bg-slate-50 border border-slate-200" />
+                  <div class="flex-1 min-w-0">
+                    <h3 class="m-0 text-xs font-bold text-slate-900 truncate">{{ (isEn() ? item.product.nameEn : item.product.nameAr) || item.product.nameAr }}</h3>
+                    <p class="m-0 text-[10px] text-slate-500">{{ item.size }} × {{ item.quantity }}</p>
+                    <strong class="text-xs font-black text-flare-gold">{{ item.product.price * item.quantity }} {{ currencyLabel() }}</strong>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <div class="pt-4 border-t border-slate-200 mt-2 space-y-2 text-xs">
+              <div class="flex justify-between text-slate-600">
+                <span>{{ isEn() ? 'Subtotal' : 'المجموع الفرعي' }}</span>
+                <strong class="text-slate-900">{{ subtotal() }} {{ currencyLabel() }}</strong>
+              </div>
+              <div class="flex justify-between text-slate-600">
+                <span>{{ isEn() ? 'Shipping Fee' : 'تكلفة التوصيل' }}</span>
+                <strong class="text-slate-900">{{ shipping() }} {{ currencyLabel() }}</strong>
+              </div>
+              <div class="flex justify-between text-sm font-black text-slate-900 pt-2 border-t border-dashed border-slate-200">
+                <span>{{ isEn() ? 'Total Amount' : 'الإجمالي النهائي' }}</span>
+                <strong class="text-flare-gold text-base">{{ total() }} {{ currencyLabel() }}</strong>
+              </div>
+              <small class="block text-[10px] text-slate-400 rtl:text-left ltr:text-right">{{ isEn() ? 'Including VAT' : 'شامل ضريبة القيمة المضافة' }}</small>
+            </div>
+          </section>
+
+          <!-- Safe Shopping Box -->
+          @if (config().showSafeShopping) {
+            <section class="p-4 bg-slate-50 border border-slate-200 rounded-[15px] flex items-start gap-3">
+              <div class="w-8 h-8 rounded-full bg-flare-gold/10 text-flare-gold flex items-center justify-center shrink-0 mt-0.5">
+                <svg class="w-4 h-4 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="m-0 text-xs font-bold text-slate-900">{{ safeShoppingTitle() }}</h3>
+                <p class="m-0 mt-1 text-[11px] text-slate-500 leading-normal">{{ safeShoppingText() }}</p>
+              </div>
+            </section>
+          }
+
+          <!-- Trust Badges -->
+          @if (config().showTrustBadges) {
+            <section id="section-checkout-trust" data-section-type="benefits" class="p-4 bg-white border border-slate-200 rounded-[15px] grid grid-cols-2 gap-3">
+              @for (badge of config().trustBadges; track badge.id) {
+                <div class="flex items-center gap-2">
+                  <div class="w-7 h-7 rounded-full bg-flare-gold/10 text-flare-gold flex items-center justify-center shrink-0">
+                    <svg class="w-3.5 h-3.5 stroke-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div class="min-w-0">
+                    <strong class="block text-[11px] font-bold text-slate-900 truncate">{{ isEn() ? (badge.titleEn || badge.title) : (badge.titleAr || badge.title) }}</strong>
+                    <small class="block text-[10px] text-slate-500 truncate">{{ isEn() ? (badge.subtitleEn || badge.subtitle) : (badge.subtitleAr || badge.subtitle) }}</small>
+                  </div>
+                </div>
+              }
+            </section>
+          }
+        </aside>
+      </div>
+    }
+  </main>
+}

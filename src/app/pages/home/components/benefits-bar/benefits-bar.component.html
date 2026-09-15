@@ -1,0 +1,35 @@
+<section class="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 mt-4 sm:mt-6 lg:mt-8" [attr.aria-label]="isEn ? 'Shopping Benefits' : 'مميزات التسوق'">
+  <div class="grid grid-cols-3 divide-x rtl:divide-x-reverse divide-slate-100/80 bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl border border-slate-100/90 shadow-[0_8px_30px_rgba(0,0,0,0.03)] p-2.5 sm:p-4 lg:p-6 transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.05)]">
+    @for (benefit of benefits; track benefit.title; let index = $index) {
+      <article class="group relative flex items-center justify-center gap-2 sm:gap-3.5 lg:gap-5 px-1.5 sm:px-4 py-2 transition-transform duration-300 hover:-translate-y-0.5">
+        <div class="w-9 h-9 sm:w-11 sm:h-11 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-xl sm:rounded-2xl bg-amber-50/90 text-flare-gold flex items-center justify-center flex-shrink-0 group-hover:bg-flare-gold group-hover:text-white transition-all duration-300 shadow-sm">
+          @switch (benefit.icon) {
+            @case ('cash') {
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <rect width="20" height="12" x="2" y="6" rx="2" />
+                <circle cx="12" cy="12" r="2" />
+                <path d="M6 12h.01M18 12h.01" />
+              </svg>
+            }
+            @case ('delivery') {
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+              </svg>
+            }
+            @case ('exchange') {
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            }
+          }
+        </div>
+
+        <div class="flex flex-col text-start rtl:text-right ltr:text-left">
+          <strong class="text-[11px] sm:text-[13px] md:text-[15px] lg:text-[17px] font-bold text-slate-900 group-hover:text-flare-gold transition-colors leading-tight">{{ benefit.title }}</strong>
+          <span class="text-[9px] sm:text-[11px] md:text-[12px] lg:text-[13px] text-slate-500 mt-0.5 leading-tight">{{ benefit.subtitle }}</span>
+        </div>
+      </article>
+    }
+  </div>
+</section>

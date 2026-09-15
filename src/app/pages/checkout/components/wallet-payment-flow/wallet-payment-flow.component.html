@@ -1,0 +1,323 @@
+<div class="min-h-screen bg-slate-50 text-slate-900 pb-20 selection:bg-flare-gold/20 selection:text-flare-gold">
+  <!-- Header -->
+  <header class="sticky top-0 z-50 flex items-center justify-between h-[72px] px-4 sm:px-6 bg-white/80 backdrop-blur-md border-b border-slate-200">
+    <button
+      type="button"
+      (click)="back.emit()"
+      class="flex items-center gap-2 h-10 px-3 sm:px-4 text-[14px] font-bold text-slate-600 bg-transparent border-none rounded-full cursor-pointer transition-all hover:bg-slate-50 hover:text-slate-900"
+    >
+      <svg class="w-4.5 h-4.5 rtl:rotate-0 ltr:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      <span class="hidden sm:inline">{{ isEn() ? 'Back to payment methods' : 'عودة إلى طريقة الدفع' }}</span>
+    </button>
+
+    <div class="flex items-center gap-1 font-black text-xl">
+      <span class="text-black tracking-wider">FLARE</span>
+    </div>
+
+    <button
+      type="button"
+      (click)="goCart()"
+      class="relative flex items-center justify-center w-10 h-10 text-slate-600 bg-transparent border-none rounded-full cursor-pointer transition-all hover:bg-slate-50 hover:text-slate-900"
+      [attr.aria-label]="isEn() ? 'Shopping Cart' : 'سلة التسوق'"
+    >
+      <svg class="w-5.5 h-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+        <circle cx="9" cy="21" r="1" />
+        <circle cx="20" cy="21" r="1" />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+      </svg>
+      <span class="absolute top-1 right-0 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[11px] font-black text-white bg-slate-900 rounded-full">
+        {{ totalQuantity() }}
+      </span>
+    </button>
+  </header>
+
+  <main class="w-full max-w-[800px] mx-auto px-4 sm:px-6 pt-10">
+    <section class="flex flex-col items-center gap-4 text-center mb-10">
+      <div>
+        <h1 class="m-0 mb-1 text-[24px] font-black text-slate-900">{{ providerLabel() }}</h1>
+        <p class="m-0 text-[15px] font-medium text-slate-500">
+          @switch (step()) {
+            @case (1) { {{ isEn() ? 'Enter your card details' : 'أدخل بيانات بطاقتك' }} }
+            @case (2) { {{ isEn() ? 'Review your order' : 'مراجعة طلبك' }} }
+            @case (3) { {{ isEn() ? 'Payment Complete' : 'تم الدفع' }} }
+          }
+        </p>
+      </div>
+    </section>
+
+    <!-- Payment Steps Indicator -->
+    <div class="flex items-center justify-between w-full max-w-[600px] mx-auto mb-10" [attr.aria-label]="isEn() ? 'Payment Steps' : 'خطوات الدفع'">
+      @for (item of [{ number: 1, label: isEn() ? 'Card Details' : 'إدخال البيانات' }, { number: 2, label: isEn() ? 'Review Order' : 'مراجعة الطلب' }, { number: 3, label: isEn() ? 'Completed' : 'تم الدفع' }]; track item.number; let idx = $index; let last = $last) {
+        @let unlocked = item.number <= maxUnlockedStep();
+        <button
+          type="button"
+          class="relative flex flex-col items-center gap-2 group flex-1 bg-transparent border-none transition-all duration-300"
+          [ngClass]="[
+            step() >= item.number ? 'opacity-100' : 'opacity-50 grayscale',
+            step() === item.number ? 'scale-105' : '',
+            unlocked ? 'cursor-pointer' : 'cursor-not-allowed',
+            flashingStep() === item.number ? 'animate-pulse' : ''
+          ]"
+          [disabled]="!unlocked"
+          (click)="handleStepClick(item.number)"
+        >
+          <span
+            class="flex items-center justify-center w-10 h-10 text-[16px] font-black rounded-full border-2 transition-colors z-10"
+            [ngClass]="[
+              step() >= item.number ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-400 border-slate-200',
+              step() === item.number ? 'ring-4 ring-slate-900/10' : ''
+            ]"
+          >
+            {{ item.number }}
+          </span>
+          <strong class="text-[12px] font-bold" [ngClass]="step() >= item.number ? 'text-slate-900' : 'text-slate-500'">
+            {{ item.label }}
+          </strong>
+          @if (!last) {
+            <i class="absolute top-5 rtl:left-[-50%] rtl:right-1/2 ltr:right-[-50%] ltr:left-1/2 h-0.5 -translate-y-1/2 -z-10 transition-colors" [ngClass]="step() > item.number ? 'bg-slate-900' : 'bg-slate-200'"></i>
+          }
+        </button>
+      }
+    </div>
+
+    <!-- Step 1: Card Form -->
+    @if (step() === 1) {
+      <form class="flex flex-col gap-8" (ngSubmit)="handlePaymentSubmit($event)" noValidate>
+        @if (paymentError()) {
+          <section class="flex items-start gap-4 p-5 bg-flare-red/10 border border-flare-red rounded-2xl text-flare-red mb-2" role="alert">
+            <svg class="w-6 h-6 text-flare-red shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <div class="flex flex-col gap-1">
+              <h2 class="m-0 text-[15px] font-black">{{ isEn() ? 'Sorry, card details are incorrect' : 'عذرًا، بيانات البطاقة غير صحيحة' }}</h2>
+              <p class="m-0 text-[13px] font-medium opacity-90 leading-relaxed">{{ isEn() ? 'Please verify card details and try again.' : 'يرجى التحقق من بيانات البطاقة والمحاولة مرة أخرى.' }}</p>
+              <span class="text-[12px] font-bold mt-2 bg-white/50 px-2 py-1 rounded inline-flex self-start">{{ isEn() ? 'Error Code:' : 'رمز الخطأ:' }} <strong>05</strong></span>
+            </div>
+          </section>
+        }
+
+        <section class="flex flex-col p-6 sm:p-8 bg-white border border-slate-200 rounded-[24px] shadow-sm relative overflow-hidden">
+          <div class="flex items-center gap-3 pb-6 mb-6 border-b border-slate-100">
+            <svg class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <rect width="20" height="14" x="2" y="5" rx="2" />
+              <line x1="2" x2="22" y1="10" y2="10" />
+            </svg>
+            <h2 class="m-0 text-[18px] font-black text-slate-900">{{ isEn() ? 'Card Information' : 'معلومات البطاقة' }}</h2>
+          </div>
+
+          <div class="flex flex-col gap-5">
+            <!-- Card Number -->
+            <label class="flex flex-col gap-2 relative">
+              <span class="text-[13px] font-bold text-slate-700 rtl:pr-1 ltr:pl-1">{{ isEn() ? 'Card Number' : 'رقم البطاقة' }}</span>
+              <div
+                class="relative flex items-center h-[52px] bg-slate-50 border rounded-[16px] transition-all group"
+                [ngClass]="shouldShowError('cardNumber') ? 'border-flare-red bg-flare-red/10/50' : shouldShowValid('cardNumber', cardNumber()) ? 'border-green-300 bg-green-50/30' : 'border-slate-200 focus-within:border-slate-900 focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(15,23,42,0.06)]'"
+              >
+                <input
+                  class="w-full h-full pl-12 pr-4 bg-transparent text-[15px] font-bold text-slate-900 text-left outline-none placeholder:text-slate-400 placeholder:font-medium tracking-[2px]"
+                  inputmode="numeric"
+                  [ngModel]="cardNumber()"
+                  (ngModelChange)="formatCardNumber($event)"
+                  name="cardNumber"
+                  placeholder="1234 5678 9012 3456"
+                  dir="ltr"
+                />
+              </div>
+              @if (shouldShowError('cardNumber')) {
+                <small class="text-[12px] font-bold text-flare-red rtl:pr-1 ltr:pl-1">{{ validationErrors()['cardNumber'] }}</small>
+              }
+            </label>
+
+            <!-- CVV & Expiry -->
+            <div class="grid grid-cols-2 gap-4 sm:gap-5">
+              <label class="flex flex-col gap-2 relative">
+                <span class="text-[13px] font-bold text-slate-700 rtl:pr-1 ltr:pl-1">{{ isEn() ? 'Security Code (CVV)' : 'رمز الأمان (CVV)' }}</span>
+                <div
+                  class="relative flex items-center h-[52px] bg-slate-50 border rounded-[16px] transition-all group"
+                  [ngClass]="shouldShowError('cvv') ? 'border-flare-red bg-flare-red/10/50' : shouldShowValid('cvv', cvv()) ? 'border-green-300 bg-green-50/30' : 'border-slate-200 focus-within:border-slate-900 focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(15,23,42,0.06)]'"
+                >
+                  <input
+                    class="w-full h-full pl-10 pr-4 bg-transparent text-[15px] font-bold text-slate-900 text-left outline-none placeholder:text-slate-400 placeholder:font-medium tracking-[2px]"
+                    inputmode="numeric"
+                    [ngModel]="cvv()"
+                    (ngModelChange)="cvv.set($event)"
+                    name="cvv"
+                    placeholder="123"
+                    dir="ltr"
+                  />
+                </div>
+                @if (shouldShowError('cvv')) {
+                  <small class="text-[12px] font-bold text-flare-red rtl:pr-1 ltr:pl-1">{{ validationErrors()['cvv'] }}</small>
+                }
+              </label>
+
+              <label class="flex flex-col gap-2 relative">
+                <span class="text-[13px] font-bold text-slate-700 rtl:pr-1 ltr:pl-1">{{ isEn() ? 'Expiry Date' : 'تاريخ الانتهاء' }}</span>
+                <div
+                  class="relative flex items-center h-[52px] bg-slate-50 border rounded-[16px] transition-all group"
+                  [ngClass]="shouldShowError('expiryDate') ? 'border-flare-red bg-flare-red/10/50' : shouldShowValid('expiryDate', expiryDate()) ? 'border-green-300 bg-green-50/30' : 'border-slate-200 focus-within:border-slate-900 focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(15,23,42,0.06)]'"
+                >
+                  <input
+                    class="w-full h-full pl-10 pr-4 bg-transparent text-[15px] font-bold text-slate-900 text-left outline-none placeholder:text-slate-400 placeholder:font-medium tracking-[2px]"
+                    inputmode="numeric"
+                    [ngModel]="expiryDate()"
+                    (ngModelChange)="formatExpiry($event)"
+                    name="expiryDate"
+                    placeholder="MM / YY"
+                    dir="ltr"
+                  />
+                </div>
+                @if (shouldShowError('expiryDate')) {
+                  <small class="text-[12px] font-bold text-flare-red rtl:pr-1 ltr:pl-1">{{ validationErrors()['expiryDate'] }}</small>
+                }
+              </label>
+            </div>
+
+            <!-- Cardholder Name -->
+            <label class="flex flex-col gap-2 relative mt-2">
+              <span class="text-[13px] font-bold text-slate-700 rtl:pr-1 ltr:pl-1">{{ isEn() ? 'Cardholder Name' : 'اسم صاحب البطاقة' }}</span>
+              <div
+                class="relative flex items-center h-[52px] px-4 bg-slate-50 border rounded-[16px] transition-all group"
+                [ngClass]="shouldShowError('cardholderName') ? 'border-flare-red bg-flare-red/10/50' : shouldShowValid('cardholderName', cardholderName()) ? 'border-green-300 bg-green-50/30' : 'border-slate-200 focus-within:border-slate-900 focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(15,23,42,0.06)]'"
+              >
+                <input
+                  class="w-full h-full bg-transparent text-[15px] font-bold text-slate-900 outline-none placeholder:text-slate-400 placeholder:font-medium rtl:text-right ltr:text-left"
+                  [ngModel]="cardholderName()"
+                  (ngModelChange)="cardholderName.set($event)"
+                  name="cardholderName"
+                  [placeholder]="isEn() ? 'As printed on card' : 'كما هو مكتوب على البطاقة'"
+                />
+              </div>
+              @if (shouldShowError('cardholderName')) {
+                <small class="text-[12px] font-bold text-flare-red rtl:pr-1 ltr:pl-1">{{ validationErrors()['cardholderName'] }}</small>
+              }
+            </label>
+          </div>
+        </section>
+
+        <!-- CTA Button -->
+        <button
+          type="submit"
+          class="flex items-center justify-center gap-3 w-full h-[60px] bg-slate-900 text-white text-[16px] font-black rounded-full shadow-[0_8px_24px_rgba(15,23,42,0.16)] transition-all hover:bg-slate-800 hover:-translate-y-1 active:translate-y-0 cursor-pointer"
+        >
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          {{ paymentError() ? (isEn() ? 'Try Again' : 'إعادة المحاولة') : (isEn() ? ('Continue payment with ' + providerLabel()) : ('متابعة للدفع باستخدام ' + providerLabel())) }}
+        </button>
+      </form>
+    }
+
+    <!-- Step 2: Processing -->
+    @if (step() === 2) {
+      <div class="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
+        <section
+          class="flex flex-col items-center justify-center gap-6 p-10 bg-white border rounded-[32px] text-center transition-all duration-700"
+          [ngClass]="processingComplete() ? 'border-green-200 shadow-[0_8px_32px_rgba(34,197,94,0.12)]' : 'border-slate-200 shadow-md'"
+        >
+          @if (processingComplete()) {
+            <span class="flex items-center justify-center w-20 h-20 bg-green-500 text-white rounded-full shadow-[0_0_0_8px_rgba(34,197,94,0.1)] animate-in zoom-in duration-500">
+              <svg class="w-10 h-10 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </span>
+          } @else {
+            <div class="flex items-center justify-center w-20 h-20 bg-slate-50 text-slate-900 rounded-full border border-slate-100 shadow-sm relative">
+              <div class="absolute inset-0 rounded-full border-4 border-slate-200 border-t-slate-900 animate-spin"></div>
+              <svg class="w-8 h-8 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+          }
+
+          <div class="flex flex-col gap-2">
+            <h2 class="m-0 text-[24px] font-black text-slate-900">
+              {{ processingComplete() ? (isEn() ? 'Payment Processed' : 'تمت معالجة الدفع') : (isEn() ? 'Processing Payment' : 'جاري معالجة الدفع') }}
+            </h2>
+            <p class="m-0 text-[15px] font-medium text-slate-500 max-w-[360px] mx-auto leading-relaxed">
+              {{ processingComplete() ? (isEn() ? 'Order confirmed successfully. Click on Step 3 to complete.' : 'تم تأكيد العملية بنجاح، اضغطي على الخطوة الثالثة لإكمال الطلب.') : (isEn() ? 'Please wait, this will only take a few seconds' : 'يرجى الانتظار، قد تستغرق هذه العملية بضع ثوانٍ فقط') }}
+            </p>
+          </div>
+
+          <div
+            class="w-full p-4 rounded-xl flex items-center justify-center gap-3 text-[14px] font-bold"
+            [ngClass]="processingComplete() ? 'bg-green-50 text-green-800 border border-green-100' : 'bg-amber-50 text-amber-800 border border-amber-100'"
+          >
+            <strong [ngClass]="processingComplete() ? 'text-green-900' : 'text-amber-900'">
+              {{ processingComplete() ? (isEn() ? 'Step 3 is ready now' : 'الخطوة الثالثة جاهزة الآن') : (isEn() ? 'Do not close or go back' : 'لا تغلق التطبيق أو تعود للخلف') }}
+            </strong>
+          </div>
+        </section>
+      </div>
+    }
+
+    <!-- Step 3: Success -->
+    @if (step() === 3) {
+      <div class="flex flex-col gap-8 animate-in fade-in zoom-in-95 duration-500">
+        <section class="flex flex-col items-center justify-center gap-4 p-10 bg-white border border-green-200 rounded-[32px] text-center shadow-[0_12px_48px_rgba(34,197,94,0.12)]">
+          <span class="flex items-center justify-center w-24 h-24 bg-green-500 text-white rounded-full shadow-[0_0_0_12px_rgba(34,197,94,0.1)] mb-4">
+            <svg class="w-12 h-12 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </span>
+          <h2 class="m-0 text-[28px] font-black text-slate-900">{{ isEn() ? 'Payment Successful!' : 'تم الدفع بنجاح!' }}</h2>
+          <p class="m-0 text-[16px] font-medium text-slate-500 leading-relaxed max-w-[400px]">
+            {{ isEn() ? 'Thank you, your order has been received and is being prepared.' : 'شكرًا لك، تم استلام طلبك وجاري تجهيزه.' }}<br />
+            {{ isEn() ? 'You will receive a confirmation message on your email and phone.' : 'سوف تتلقى رسالة تأكيد على بريدك الإلكتروني ورقم جوالك.' }}
+          </p>
+        </section>
+
+        <!-- Order Info Card -->
+        <section class="flex flex-col p-6 sm:p-8 bg-white border border-slate-200 rounded-[24px] shadow-sm text-center">
+          <strong class="text-[20px] font-black text-slate-900 mb-2 font-mono">FLARE - {{ session().orderNumber }}</strong>
+
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
+            <button
+              type="button"
+              (click)="downloadInvoice()"
+              class="flex items-center justify-center gap-2 w-full sm:w-auto px-6 h-12 text-[14px] font-bold text-slate-700 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors cursor-pointer"
+            >
+              <svg class="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              {{ isEn() ? 'Download Invoice' : 'تحميل الفاتورة' }}
+            </button>
+            <button
+              type="button"
+              (click)="printInvoice()"
+              class="flex items-center justify-center gap-2 w-full sm:w-auto px-6 h-12 text-[14px] font-bold text-slate-700 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors cursor-pointer"
+            >
+              <svg class="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 6 2 18 2 18 9" />
+                <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2" />
+                <rect x="6" y="14" width="12" height="8" />
+              </svg>
+              {{ isEn() ? 'Print Invoice' : 'طباعة الفاتورة' }}
+            </button>
+          </div>
+        </section>
+
+        <div class="flex flex-col gap-3 mt-4">
+          <button
+            type="button"
+            (click)="goHome()"
+            class="flex items-center justify-center w-full h-[60px] bg-slate-900 text-white text-[16px] font-black rounded-full shadow-[0_8px_24px_rgba(15,23,42,0.16)] transition-all hover:bg-slate-800 hover:-translate-y-1 active:translate-y-0 cursor-pointer"
+          >
+            {{ isEn() ? 'Continue Shopping' : 'متابعة التسوق' }}
+          </button>
+          <button
+            type="button"
+            (click)="goOrders()"
+            class="flex items-center justify-center w-full h-[60px] bg-transparent border-2 border-slate-200 text-[16px] font-bold text-slate-900 rounded-full hover:border-slate-900 transition-colors cursor-pointer"
+          >
+            {{ isEn() ? 'Go to My Orders' : 'الذهاب إلى طلباتي' }}
+          </button>
+        </div>
+      </div>
+    }
+  </main>
+</div>

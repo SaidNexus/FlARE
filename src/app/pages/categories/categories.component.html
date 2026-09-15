@@ -1,0 +1,72 @@
+<main class="w-full max-w-7xl min-h-[calc(100vh-86px)] mx-auto px-4 sm:px-7 md:px-6 lg:px-8 xl:px-10 pb-24 text-slate-900 bg-white">
+  <nav class="flex items-center gap-1.5 pt-6 sm:pt-10 mb-6 text-[13px] font-medium text-slate-500" [attr.aria-label]="isEn() ? 'Page breadcrumb' : 'مسار الصفحة'">
+    <a routerLink="/" class="text-slate-500 no-underline hover:text-flare-gold transition-colors">{{ isEn() ? 'Home' : 'الرئيسية' }}</a>
+    <svg class="w-4 h-4 text-slate-300 rtl:rotate-0 ltr:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+    <span class="text-slate-800 font-bold" aria-current="page">{{ isEn() ? 'Categories' : 'التصنيفات' }}</span>
+  </nav>
+
+  <header *ngIf="pageConfig().showTitle" id="section-categories-header" data-section-type="summary" class="flex flex-col gap-2 mb-10 sm:mb-14 text-center">
+    <h1 class="m-0 text-[32px] sm:text-[42px] font-black text-slate-900 leading-tight">
+      {{ (isEn() ? pageConfig().headerTitleEn : pageConfig().headerTitleAr) || pageConfig().headerTitle || (isEn() ? 'Categories' : 'التصنيفات') }}
+    </h1>
+    <p class="m-0 text-[15px] sm:text-[18px] font-medium text-slate-500 max-w-[500px] mx-auto leading-relaxed">
+      {{ (isEn() ? pageConfig().headerSubtitleEn : pageConfig().headerSubtitleAr) || pageConfig().headerSubtitle || (isEn() ? 'Browse all hair care products by category' : 'تصفحي جميع منتجات العناية بالشعر الفاخرة حسب الفئة') }}
+    </p>
+    <span class="block w-16 h-1 bg-flare-gold mx-auto mt-4 rounded-full" aria-hidden="true"></span>
+  </header>
+
+  @if (loading()) {
+    <div class="flex items-center justify-center py-20">
+      <div class="w-10 h-10 border-4 border-slate-200 border-t-flare-gold rounded-full animate-spin"></div>
+    </div>
+  } @else {
+    <section id="section-categories-grid" data-section-type="categories" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6 sm:gap-8" [attr.aria-label]="isEn() ? 'Product categories' : 'تصنيفات المنتجات'">
+      @for (category of categories(); track category.id; let index = $index) {
+        @let uiProps = getCategoryUIProps(category.slug);
+
+        <a
+          [routerLink]="['/products']"
+          [queryParams]="{ category: category.slug }"
+          class="group relative flex flex-col items-center p-8 bg-slate-50 border border-slate-200 rounded-[32px] no-underline overflow-hidden transition-all duration-300 hover:border-flare-gold hover:-translate-y-1 hover:shadow-[0_16px_32px_rgba(169,126,61,0.12)] animate-in fade-in slide-from-bottom-8 fill-mode-both"
+          [style.animation-delay]="index * 70 + 'ms'"
+          [attr.aria-label]="(isEn() ? 'Browse ' : 'عرض منتجات ') + (isEn() ? (category.nameEn || category.nameAr) : category.nameAr) + ' ' + uiProps.accent"
+        >
+          <div class="relative w-32 h-32 mb-6 transition-transform duration-500 ease-out group-hover:scale-110">
+            <img
+              [src]="uiProps.image"
+              (error)="onImgError($event)"
+              [alt]="uiProps.imageAlt"
+              [loading]="index < 2 ? 'eager' : 'lazy'"
+              decoding="async"
+              class="w-full h-full object-contain mix-blend-multiply"
+              [style.object-position]="uiProps.imagePosition"
+            />
+          </div>
+
+          <div class="flex flex-col items-center text-center w-full relative z-10">
+            <h2 class="flex flex-wrap justify-center gap-1.5 m-0 mb-4 text-[22px] sm:text-[24px] font-black text-slate-900 leading-none">
+              <span>{{ isEn() ? (category.nameEn || category.nameAr) : category.nameAr }}</span>
+              <strong class="text-flare-gold">{{ uiProps.accent }}</strong>
+            </h2>
+
+            <i class="w-8 h-0.5 bg-slate-200 mb-4 transition-colors group-hover:bg-flare-gold" aria-hidden="true"></i>
+
+            <p class="m-0 mb-6 flex flex-col gap-1 text-[14px] font-medium text-slate-500 leading-relaxed group-hover:text-slate-700 transition-colors">
+              @for (line of splitLines(uiProps.description); track line) {
+                <span>{{ line }}</span>
+              }
+            </p>
+
+            <span class="flex items-center justify-center w-10 h-10 text-slate-400 bg-white border border-slate-200 rounded-full transition-all group-hover:bg-flare-gold group-hover:text-white group-hover:border-flare-gold shadow-sm group-hover:shadow-[0_4px_12px_rgba(169,126,61,0.3)]" aria-hidden="true">
+              <svg class="w-5 h-5 transition-transform rtl:group-hover:-translate-x-0.5 ltr:group-hover:translate-x-0.5 rtl:rotate-0 ltr:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </span>
+          </div>
+        </a>
+      }
+    </section>
+  }
+</main>

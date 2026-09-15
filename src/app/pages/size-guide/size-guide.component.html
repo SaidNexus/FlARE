@@ -1,0 +1,49 @@
+<main class="w-full max-w-7xl min-h-[calc(100vh-86px)] mx-auto px-4 sm:px-7 md:px-6 lg:px-8 xl:px-10 py-8 text-slate-900 bg-white">
+  <header id="section-sec-header" data-section-type="header">
+    <h1 class="text-[28px] font-extrabold mb-2 text-slate-900">{{ pageTitle() }}</h1>
+    <p class="text-slate-500 mb-8 font-medium">{{ pageSubtitle() }}</p>
+  </header>
+
+  <div id="section-sec-guide" data-section-type="guide">
+    <h2 class="text-xl font-bold mb-4 text-slate-900">{{ isEn() ? 'Hair Types & Recommended Products' : 'أنواع الشعر والمنتجات الموصى بها' }}</h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+      @for (ht of hairTypes; track ht.typeAr) {
+        <div
+          class="bg-[#FCF8F5] rounded-2xl p-5 border-2 transition-all hover:shadow-md"
+          [style.border-color]="ht.color + '33'"
+        >
+          <h3 class="m-0 mb-3 font-bold text-lg" [style.color]="ht.color">{{ isEn() ? ht.typeEn : ht.typeAr }}</h3>
+
+          <div class="mb-3">
+            <p class="m-0 mb-1.5 text-xs text-slate-600 font-bold">{{ isEn() ? 'Symptoms:' : 'الأعراض:' }}</p>
+            @for (s of (isEn() ? ht.symptomsEn : ht.symptomsAr); track s) {
+              <p class="my-0.5 text-xs text-slate-600">• {{ s }}</p>
+            }
+          </div>
+
+          <div>
+            <p class="m-0 mb-1.5 text-xs text-flare-gold font-bold">{{ isEn() ? 'Recommended FLARE Products:' : 'منتجات FLARE الموصى بها:' }}</p>
+            @for (r of (isEn() ? ht.recommendedEn : ht.recommendedAr); track r) {
+              <p class="my-0.5 text-xs text-slate-700">✓ {{ r }}</p>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  @if (pageConfig().showHelpSection !== false) {
+    <div id="section-sec-help" data-section-type="help" class="bg-gradient-to-r from-flare-gold to-[#8e6831] rounded-2xl p-6 text-white text-center shadow-lg">
+      <h3 class="m-0 mb-2 font-bold text-lg">{{ isEn() ? 'Need Personal Assistance?' : 'هل تحتاج مساعدة؟' }}</h3>
+      <p class="m-0 mb-4 opacity-90 text-sm">{{ isEn() ? 'Our hair experts are here to help you choose the ideal routine for your hair type' : 'فريقنا موجود لمساعدتك في اختيار المنتجات المثالية لشعرك' }}</p>
+      <a
+        routerLink="/contact"
+        class="inline-block px-6 py-2.5 bg-white text-flare-gold font-bold rounded-xl no-underline hover:bg-slate-50 transition-colors shadow-sm"
+      >
+        {{ isEn() ? 'Contact Us' : 'تواصل معنا' }}
+      </a>
+    </div>
+  }
+</main>
+

@@ -1,0 +1,128 @@
+import { sanitizeWithInitial } from '../../utils/config-sanitizer';
+import { Injectable, signal, effect, inject, NgZone } from '@angular/core';
+
+
+const INSTANCE_ID = typeof crypto !== 'undefined' && crypto.randomUUID
+  ? crypto.randomUUID()
+  : Math.random().toString(36).substring(2) + Date.now().toString(36);
+
+export interface AllShapersPageConfig {
+  headerTitle: string;
+  headerTitleAr?: string;
+  headerTitleEn?: string;
+
+  showRating: boolean;
+  showReviewsCount: boolean;
+  showOriginalPrice: boolean;
+
+  emptyTitle: string;
+  emptyTitleAr?: string;
+  emptyTitleEn?: string;
+  emptyText: string;
+  emptyTextAr?: string;
+  emptyTextEn?: string;
+  emptyCta: string;
+  emptyCtaAr?: string;
+  emptyCtaEn?: string;
+}
+
+const initialConfig: AllShapersPageConfig = {
+  headerTitle: 'جميع المنتجات',
+  headerTitleAr: 'جميع المنتجات',
+  headerTitleEn: 'All Products',
+
+  showRating: true,
+  showReviewsCount: true,
+  showOriginalPrice: true,
+
+  emptyTitle: 'لا توجد منتجات بهذه المواصفات',
+  emptyTitleAr: 'لا توجد منتجات بهذه المواصفات',
+  emptyTitleEn: 'No products match these specifications',
+  emptyText: 'جرّبي تغيير الفئة أو المشكلة أو نطاق السعر.',
+  emptyTextAr: 'جرّبي تغيير الفئة أو المشكلة أو نطاق السعر.',
+  emptyTextEn: 'Try changing the category, concern or price range.',
+  emptyCta: 'عرض كل المنتجات',
+  emptyCtaAr: 'عرض كل المنتجات',
+  emptyCtaEn: 'View All Products'
+};
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AllShapersPageConfigService {
+  private readonly storageKey = 'FLARE-allshapers-page-config';
+
+  private isApplyingExternalUpdate = false;
+  private lastSavedJson: string = '';
+
+  readonly pageConfig = signal<AllShapersPageConfig>(this.loadInitialConfig());
+  private zone = inject(NgZone);
+
+  constructor() {
+    this.lastSavedJson = JSON.stringify(this.pageConfig());
+
+    window.addEventListener('storage', (e: StorageEvent) => {
+      if ((e as any).__sourceInstanceId === INSTANCE_ID) return; // Discard self-triggered synthetic events
+
+      if (e.key === this.storageKey && e.newValue) {
+        if (e.newValue === this.lastSavedJson) return; // Discard echo / identical payload
+
+        try {
+          const updated = JSON.parse(e.newValue);
+          const merged = this.mergeWithInitial(updated);
+          const mergedJson = JSON.stringify(merged);
+          if (mergedJson === this.lastSavedJson) return;
+
+          this.zone.run(() => {
+            this.isApplyingExternalUpdate = true;
+            this.lastSavedJson = mergedJson;
+            this.pageConfig.set(merged);
+            queueMicrotask(() => {
+              this.isApplyingExternalUpdate = false;
+            });
+          });
+        } catch (_) { }
+      }
+    });
+
+    effect(() => {
+      const config = this.pageConfig();
+      const stringified = JSON.stringify(config);
+
+      if (this.isApplyingExternalUpdate) return;
+      if (stringified === this.lastSavedJson) return;
+
+      this.lastSavedJson = stringified;
+      localStorage.setItem(this.storageKey, stringified);
+
+      try {
+        const event = new StorageEvent('storage', {
+          key: this.storageKey,
+          newValue: stringified,
+          storageArea: localStorage,
+        });
+        (event as any).__sourceInstanceId = INSTANCE_ID;
+        window.dispatchEvent(event);
+      } catch (_) { }
+    });
+  }
+
+  updateConfig(newConfig: AllShapersPageConfig) {
+    this.pageConfig.set(newConfig);
+  }
+
+  private loadInitialConfig(): AllShapersPageConfig {
+    const saved = localStorage.getItem(this.storageKey);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return this.mergeWithInitial(parsed);
+      } catch (e) { }
+    }
+    return initialConfig;
+  }
+
+  private mergeWithInitial(parsed: any): any {
+    return sanitizeWithInitial(parsed, initialConfig);
+  }
+}

@@ -1,0 +1,394 @@
+@if (loading()) {
+  <div class="min-h-[60vh] flex items-center justify-center font-bold text-slate-600">{{ isEn() ? 'Loading...' : 'جاري التحميل...' }}</div>
+} @else if (error() || !product()) {
+  <div class="min-h-[60vh] flex flex-col items-center justify-center gap-4 text-center">
+    <p class="text-xl font-bold text-slate-800">{{ isEn() ? 'Product not found' : 'المنتج غير موجود' }}</p>
+    <a routerLink="/products" class="px-6 py-2.5 bg-slate-900 text-white rounded-full font-bold hover:bg-flare-gold transition-colors">
+      {{ isEn() ? 'Back to Shop' : 'العودة للمتجر' }}
+    </a>
+  </div>
+} @else {
+  @let prod = product()!;
+
+  <main class="w-full max-w-7xl min-h-[calc(100vh-86px)] mx-auto px-4 sm:px-7 md:px-6 lg:px-8 xl:px-10 pb-[144px] text-slate-900 bg-white">
+    <!-- Breadcrumb -->
+    @if (pageConfig().showBreadcrumb) {
+      <nav id="section-product-breadcrumb" data-section-type="summary" class="flex items-center gap-2 pt-6 text-[13px] font-medium text-slate-500" [attr.aria-label]="isEn() ? 'Product Breadcrumb' : 'مسار المنتج'">
+        <a routerLink="/" class="text-slate-500 no-underline hover:text-flare-gold transition-colors">
+          {{ isEn() ? 'Home' : 'الرئيسية' }}
+        </a>
+        <svg class="text-slate-300 w-4 h-4 rtl:rotate-0 ltr:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        <a [routerLink]="['/products']" [queryParams]="{ category: prod.category }" class="text-slate-500 no-underline hover:text-flare-gold transition-colors">
+          {{ isEn() ? 'Hair Care' : 'منتجات العناية' }}
+        </a>
+        <svg class="text-slate-300 w-4 h-4 rtl:rotate-0 ltr:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        <span class="text-slate-800 font-bold truncate max-w-[150px] sm:max-w-none">
+          {{ isEn() ? (prod.nameEn || prod.nameAr) : prod.nameAr }}
+        </span>
+      </nav>
+    }
+
+    <!-- Product Showcase -->
+    <section id="section-product-showcase" data-section-type="options" class="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-8 lg:gap-12 xl:gap-16 mt-6 sm:mt-[30px] items-start">
+      <!-- Gallery Column -->
+      <div class="flex flex-col gap-4">
+        <div class="relative aspect-square sm:aspect-auto sm:h-[480px] lg:h-[520px] xl:h-[560px] bg-slate-50 border border-slate-200 rounded-2xl p-6 flex items-center justify-center overflow-hidden">
+          <img
+            [src]="images()[activeImage()]"
+            (error)="onImgError($event)"
+            [alt]="isEn() ? (prod.nameEn || prod.nameAr) : prod.nameAr"
+            class="w-full h-full object-contain mix-blend-multiply animate-in zoom-in-95 duration-300"
+          />
+
+          @if (displayDiscount() > 0) {
+            <span class="absolute top-4 right-4 z-10 flex items-center h-7 px-3 text-[13px] font-extrabold text-white bg-flare-red rounded-full shadow-sm">
+              -{{ displayDiscount() }}%
+            </span>
+          }
+
+          <button
+            type="button"
+            class="absolute top-4 left-4 z-10 flex items-center justify-center w-10 h-10 border rounded-full transition-all duration-200 cursor-pointer"
+            [ngClass]="isWishlist() ? 'text-white bg-flare-red border-flare-red shadow-md hover:bg-flare-red hover:border-flare-red' : 'text-slate-400 bg-white border-slate-200 shadow-sm hover:text-flare-red hover:border-flare-red'"
+            (click)="toggleCurrentFavorite()"
+            [attr.aria-label]="isWishlist() ? (isEn() ? 'Remove from wishlist' : 'إزالة من المفضلة') : (isEn() ? 'Add to wishlist' : 'إضافة إلى المفضلة')"
+          >
+            <svg class="w-5 h-5 stroke-2" [attr.fill]="isWishlist() ? 'currentColor' : 'none'" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
+        </div>
+
+        @if (images().length > 1) {
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              class="flex flex-shrink-0 items-center justify-center w-10 h-10 text-slate-500 bg-slate-50 border border-slate-200 rounded-xl transition-colors hover:text-flare-gold hover:border-flare-gold"
+              (click)="previousImage()"
+              [attr.aria-label]="isEn() ? 'Previous image' : 'الصورة السابقة'"
+            >
+              <svg class="w-5 h-5 rtl:rotate-0 ltr:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+
+            <div class="flex flex-1 gap-2 overflow-x-auto snap-x snap-mandatory scrollbar-hide py-1">
+              @for (image of images(); track image; let idx = $index) {
+                <button
+                  type="button"
+                  class="relative flex-shrink-0 w-20 h-20 sm:w-[90px] sm:h-[90px] p-2 bg-slate-50 border-2 rounded-[14px] cursor-pointer transition-all snap-start overflow-hidden"
+                  [ngClass]="idx === activeImage() ? 'border-flare-gold shadow-sm ring-2 ring-flare-gold/20' : 'border-transparent hover:border-slate-300'"
+                  (click)="selectImage(idx)"
+                  [attr.aria-label]="(isEn() ? 'View image ' : 'عرض الصورة ') + (idx + 1)"
+                >
+                  <img [src]="image" (error)="onImgError($event)" alt="" class="w-full h-full object-contain mix-blend-multiply" />
+                </button>
+              }
+            </div>
+
+            <button
+              type="button"
+              class="flex flex-shrink-0 items-center justify-center w-10 h-10 text-slate-500 bg-slate-50 border border-slate-200 rounded-xl transition-colors hover:text-flare-gold hover:border-flare-gold"
+              (click)="nextImage()"
+              [attr.aria-label]="isEn() ? 'Next image' : 'الصورة التالية'"
+            >
+              <svg class="w-5 h-5 rtl:rotate-0 ltr:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- Details Column -->
+      <div class="flex flex-col lg:sticky lg:top-[100px]">
+        @if (pageConfig().showBestSellerBadge && prod.isBestSeller) {
+          <div class="inline-flex items-center gap-1.5 w-max h-[28px] px-3 mb-4 text-[12px] font-bold text-white bg-slate-900 rounded-full shadow-sm">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+            </svg>
+            <span>{{ (isEn() ? pageConfig().bestSellerTextEn : pageConfig().bestSellerTextAr) || pageConfig().bestSellerText || (isEn() ? 'Best Seller' : 'الأكثر مبيعاً') }}</span>
+          </div>
+        }
+
+        <h1 class="m-0 mb-3 text-2xl sm:text-[32px] font-extrabold text-slate-900 leading-[1.3] break-words">
+          {{ isEn() ? (prod.nameEn || prod.nameAr) : prod.nameAr }}
+        </h1>
+
+        @if (pageConfig().showRatingLine) {
+          <div class="flex items-center gap-2 mb-5 pb-5 border-b border-slate-200">
+            <span class="text-[14px] font-medium text-slate-500 whitespace-nowrap">
+              ({{ prod.reviewCount || 0 }} {{ isEn() ? 'reviews' : 'تقييم' }})
+            </span>
+            <div class="flex text-yellow-400" [attr.aria-label]="(isEn() ? 'Rating ' : 'التقييم ') + prod.rating + (isEn() ? ' out of 5' : ' من خمسة')">
+              @for (star of [0, 1, 2, 3, 4]; track star) {
+                <svg class="w-[18px] h-[18px]" [attr.fill]="star < floorRating(prod.rating) ? 'currentColor' : 'none'" viewBox="0 0 24 24" stroke="currentColor" [attr.stroke-width]="star < floorRating(prod.rating) ? 0 : 1">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                </svg>
+              }
+            </div>
+          </div>
+        }
+
+        <div class="flex items-baseline gap-3 mb-2 flex-wrap">
+          <strong class="text-[32px] font-black text-slate-900 leading-none whitespace-nowrap" [attr.aria-label]="prod.price + ' ' + currencyLabel()">
+            <span>{{ prod.price }}</span>
+            <small class="mx-1 text-[16px] font-bold text-slate-600">{{ currencyLabel() }}</small>
+          </strong>
+          @if (prod.originalPrice && prod.originalPrice > prod.price) {
+            <del class="text-[18px] font-medium text-slate-400 whitespace-nowrap">
+              {{ prod.originalPrice }} {{ currencyLabel() }}
+            </del>
+          }
+        </div>
+
+        <p class="flex items-center gap-1.5 m-0 mb-6 text-[13px] font-medium text-slate-500">
+          <svg class="w-[18px] h-[18px] text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          {{ isEn() ? 'Tax included' : 'شامل الضريبة' }}
+        </p>
+
+        <div class="w-full h-px bg-slate-200 my-6"></div>
+
+        <!-- Size Selector -->
+        @if (pageConfig().showSizeOptions) {
+          <div class="flex items-center justify-between mb-4">
+            <strong class="text-[15px] font-bold text-slate-900">{{ (isEn() ? pageConfig().sizeLabelEn : pageConfig().sizeLabelAr) || pageConfig().sizeLabel || (isEn() ? 'Size' : 'المقاس') }}</strong>
+          </div>
+
+          <div class="flex flex-wrap gap-2.5 mb-6">
+            @for (size of prod.sizes || []; track size) {
+              <button
+                type="button"
+                class="min-w-[80px] h-[46px] px-4 text-[14px] font-bold rounded-xl border-2 transition-all duration-200"
+                [ngClass]="selectedSize() === size ? 'text-white bg-slate-900 border-slate-900 shadow-md' : 'text-slate-600 bg-white border-slate-200 hover:border-slate-400 hover:text-slate-900'"
+                (click)="selectedSize.set(size)"
+              >
+                {{ size }}
+              </button>
+            }
+          </div>
+
+          <div class="w-full h-px bg-slate-200 my-6"></div>
+        }
+
+        <!-- Quantity Selector -->
+        <div class="flex items-center gap-6 mb-8">
+          <strong class="text-[15px] font-bold text-slate-900">{{ isEn() ? 'Quantity' : 'الكمية' }}</strong>
+          <div class="flex items-center h-[46px] px-2 bg-slate-50 border border-slate-200 rounded-xl shadow-sm">
+            <button
+              type="button"
+              class="flex items-center justify-center w-[34px] h-[34px] bg-white border border-slate-200 rounded-lg cursor-pointer transition-colors hover:text-flare-gold hover:border-flare-gold hover:shadow-sm"
+              (click)="quantity.update(q => q > 1 ? q - 1 : 1)"
+              [attr.aria-label]="isEn() ? 'Decrease quantity' : 'تقليل الكمية'"
+            >
+              <svg class="w-4 h-4 stroke-2 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" />
+              </svg>
+            </button>
+            <span class="w-12 text-center text-[16px] font-bold text-slate-900">
+              {{ quantity() }}
+            </span>
+            <button
+              type="button"
+              class="flex items-center justify-center w-[34px] h-[34px] bg-white border border-slate-200 rounded-lg cursor-pointer transition-colors hover:text-flare-gold hover:border-flare-gold hover:shadow-sm"
+              (click)="quantity.update(q => q < (prod.stock || 10) ? q + 1 : q)"
+              [attr.aria-label]="isEn() ? 'Increase quantity' : 'زيادة الكمية'"
+            >
+              <svg class="w-4 h-4 stroke-2 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- CTAs -->
+        @if (pageConfig().showPurchaseActions) {
+          <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6">
+            <button
+              type="button"
+              class="flex !h-[50px] min-h-[50px] items-center justify-center gap-2 flex-1 text-[16px] font-bold text-white bg-slate-900 border border-slate-900 rounded-xl cursor-pointer transition-all shadow-md hover:-translate-y-[1px] hover:shadow-lg hover:bg-slate-800"
+              (click)="addCurrentProduct()"
+            >
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              {{ (isEn() ? pageConfig().addToCartTextEn : pageConfig().addToCartTextAr) || pageConfig().addToCartText || (isEn() ? 'Add to Cart' : 'إضافة إلى السلة') }}
+            </button>
+
+            <button
+              type="button"
+              class="flex !h-[50px] min-h-[50px] items-center justify-center gap-2 flex-1 text-[16px] font-bold text-white bg-flare-gold border border-flare-gold rounded-xl cursor-pointer transition-all shadow-[0_4px_12px_rgba(169,126,61,0.25)] hover:-translate-y-[1px] hover:shadow-[0_6px_16px_rgba(169,126,61,0.35)] hover:bg-flare-gold-dark"
+              (click)="buyNow()"
+            >
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              {{ (isEn() ? pageConfig().buyNowTextEn : pageConfig().buyNowTextAr) || pageConfig().buyNowText || (isEn() ? 'Buy Now' : 'شراء مباشر') }}
+            </button>
+          </div>
+        }
+
+        <!-- Features Bar / Service Row -->
+        @if (pageConfig().showServiceRow) {
+          <div class="flex items-center justify-between w-full py-4 bg-slate-50 border border-slate-100 rounded-[16px] px-3 sm:px-5">
+            <span class="flex flex-col sm:flex-row items-center gap-1.5 text-[11px] sm:text-[12px] font-bold text-slate-600 whitespace-nowrap text-center">
+              <svg class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <rect width="20" height="12" x="2" y="6" rx="2" />
+                <circle cx="12" cy="12" r="2" />
+              </svg>
+              {{ isEn() ? 'Cash on Delivery' : 'دفع عند الاستلام' }}
+            </span>
+            <span class="flex flex-col sm:flex-row items-center gap-1.5 text-[11px] sm:text-[12px] font-bold text-slate-600 whitespace-nowrap text-center">
+              <svg class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+              </svg>
+              {{ isEn() ? 'Fast Shipping' : 'شحن سريع' }}
+            </span>
+            <span class="flex flex-col sm:flex-row items-center gap-1.5 text-[11px] sm:text-[12px] font-bold text-slate-600 whitespace-nowrap text-center">
+              <svg class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {{ isEn() ? 'Easy Returns' : 'إرجاع سهل' }}
+            </span>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Detail Tabs -->
+    @if (pageConfig().showTabs) {
+      <nav id="section-product-tabs" data-section-type="tabs" class="top-[60px] z-40 flex items-center overflow-x-auto gap-1 sm:gap-2 p-2 sm:p-4 mt-8 bg-white/90 backdrop-blur-md border-y border-slate-200 scrollbar-hide w-full" [attr.aria-label]="isEn() ? 'Product Details' : 'تفاصيل المنتج'">
+        <button
+          type="button"
+          class="flex-1 flex items-center justify-center whitespace-nowrap min-w-max h-[42px] px-3 sm:px-5 text-[13px] sm:text-[14px] font-bold border rounded-xl transition-colors cursor-pointer"
+          [ngClass]="activeTab() === 'description' ? 'text-white bg-slate-900 border-slate-900 shadow-sm' : 'text-slate-600 bg-slate-50 border-slate-200 hover:border-slate-400 hover:text-slate-900'"
+          (click)="scrollToSection('description')"
+        >
+          {{ (isEn() ? pageConfig().tabDescriptionTextEn : pageConfig().tabDescriptionTextAr) || pageConfig().tabDescriptionText || (isEn() ? 'Description' : 'الوصف') }}
+        </button>
+        <button
+          type="button"
+          class="flex-1 flex items-center justify-center whitespace-nowrap min-w-max h-[42px] px-3 sm:px-5 text-[13px] sm:text-[14px] font-bold border rounded-xl transition-colors cursor-pointer"
+          [ngClass]="activeTab() === 'features' ? 'text-white bg-slate-900 border-slate-900 shadow-sm' : 'text-slate-600 bg-slate-50 border-slate-200 hover:border-slate-400 hover:text-slate-900'"
+          (click)="scrollToSection('features')"
+        >
+          {{ (isEn() ? pageConfig().tabFeaturesTextEn : pageConfig().tabFeaturesTextAr) || pageConfig().tabFeaturesText || (isEn() ? 'Features' : 'المميزات') }}
+        </button>
+        <button
+          type="button"
+          class="flex-1 flex items-center justify-center whitespace-nowrap min-w-max h-[42px] px-3 sm:px-5 text-[13px] sm:text-[14px] font-bold border rounded-xl transition-colors cursor-pointer"
+          [ngClass]="activeTab() === 'reviews' ? 'text-white bg-slate-900 border-slate-900 shadow-sm' : 'text-slate-600 bg-slate-50 border-slate-200 hover:border-slate-400 hover:text-slate-900'"
+          (click)="scrollToSection('reviews')"
+        >
+          {{ (isEn() ? pageConfig().tabReviewsTextEn : pageConfig().tabReviewsTextAr) || pageConfig().tabReviewsText || (isEn() ? 'Reviews' : 'التقييمات') }} ({{ prod.reviewCount || 0 }})
+        </button>
+      </nav>
+    }
+
+    <!-- Description Section -->
+    @if (pageConfig().showDescriptionSection) {
+      <section id="lk-description" data-section-type="description" class="py-8 sm:py-12 scroll-m-[160px]">
+        <h2 class="m-0 mb-6 text-[22px] sm:text-[28px] font-black text-slate-900 rtl:border-r-4 ltr:border-l-4 border-flare-gold rtl:pr-3 rtl:sm:pr-4 ltr:pl-3 ltr:sm:pl-4">
+          {{ (isEn() ? pageConfig().tabDescriptionTextEn : pageConfig().tabDescriptionTextAr) || pageConfig().tabDescriptionText || (isEn() ? 'Product Description' : 'وصف المنتج') }}
+        </h2>
+        <p class="m-0 text-[14px] sm:text-[16px] text-slate-600 leading-relaxed max-w-[800px]">
+          {{ isEn() ? (prod.descEn || prod.descAr) : prod.descAr }}
+        </p>
+      </section>
+    }
+
+    <!-- Features Section -->
+    @if (pageConfig().showFeaturesSection) {
+      <section id="lk-features" data-section-type="features" class="py-8 sm:py-12 scroll-m-[160px] bg-slate-50 -mx-4 px-4 sm:-mx-7 sm:px-7 rounded-[24px]">
+        <h2 class="m-0 mb-8 sm:mb-10 text-[22px] sm:text-[28px] font-black text-slate-900 rtl:border-r-4 ltr:border-l-4 border-flare-gold rtl:pr-3 rtl:sm:pr-4 ltr:pl-3 ltr:sm:pl-4">
+          {{ (isEn() ? pageConfig().tabFeaturesTextEn : pageConfig().tabFeaturesTextAr) || pageConfig().tabFeaturesText || (isEn() ? 'Features' : 'المميزات') }}
+        </h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 sm:gap-6">
+          @for (feat of pageConfig().features; track feat.id) {
+            <article class="flex flex-col items-center text-center">
+              <div class="flex items-center justify-center w-16 h-16 sm:w-[84px] sm:h-[84px] mb-4 sm:mb-5 bg-white rounded-full shadow-[0_12px_24px_rgba(21,34,48,0.06)] text-flare-gold">
+                <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <strong class="text-[13px] sm:text-[15px] font-bold text-slate-900 mb-1 leading-tight">
+                {{ isEn() ? (feat.titleEn || feat.titleAr || feat.title) : (feat.titleAr || feat.title) }}
+              </strong>
+              <span class="text-[11px] sm:text-[12px] font-medium text-slate-500 leading-snug">
+                {{ isEn() ? (feat.subtitleEn || feat.subtitleAr || feat.subtitle) : (feat.subtitleAr || feat.subtitle) }}
+              </span>
+            </article>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Reviews Section -->
+    @if (pageConfig().showReviewsSection) {
+      <section id="lk-reviews" data-section-type="reviews" class="py-8 sm:py-12 scroll-m-[160px]">
+        <h2 class="m-0 mb-8 sm:mb-10 text-[22px] sm:text-[28px] font-black text-slate-900 rtl:border-r-4 ltr:border-l-4 border-flare-gold rtl:pr-3 rtl:sm:pr-4 ltr:pl-3 ltr:sm:pl-4">
+          {{ (isEn() ? pageConfig().tabReviewsTextEn : pageConfig().tabReviewsTextAr) || pageConfig().tabReviewsText || (isEn() ? 'Customer Reviews' : 'تقييمات العملاء') }}
+        </h2>
+      <div class="grid grid-cols-1 md:grid-cols-[1fr_2.5fr_1.5fr] lg:grid-cols-[1fr_3fr_2fr] gap-8 lg:gap-12">
+        <div class="flex flex-col items-center justify-center text-center rtl:md:border-l ltr:md:border-r md:border-slate-200 rtl:md:pl-8 ltr:md:pr-8">
+          <strong class="text-[54px] sm:text-[72px] font-black text-slate-900 leading-none">
+            {{ prod.rating }}
+          </strong>
+          <div class="flex text-yellow-400 mt-2 mb-1" [attr.aria-label]="isEn() ? 'Stars' : 'النجوم'">
+            @for (star of [0, 1, 2, 3, 4]; track star) {
+              <svg class="w-5 h-5 sm:w-6 sm:h-6" [attr.fill]="star < floorRating(prod.rating) ? 'currentColor' : 'none'" viewBox="0 0 24 24" stroke="currentColor" [attr.stroke-width]="star < floorRating(prod.rating) ? 0 : 1">
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+              </svg>
+            }
+          </div>
+          <span class="text-[14px] font-bold text-slate-500 mb-1">{{ isEn() ? 'out of 5' : 'من 5' }}</span>
+          <small class="text-[12px] font-medium text-slate-400">({{ prod.reviewCount || 0 }} {{ isEn() ? 'reviews' : 'تقييم' }})</small>
+        </div>
+
+        <div class="flex flex-col gap-5 border-b md:border-b-0 border-slate-200 pb-8 md:pb-0">
+          @for (review of customerReviews(); track review.name) {
+            <article class="flex flex-col bg-slate-50 border border-slate-200 rounded-[16px] p-5">
+              <div class="flex items-center justify-between mb-2">
+                <strong class="text-[14px] font-bold text-slate-900">{{ review.name }}</strong>
+                <div class="flex text-yellow-400">
+                  @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                    </svg>
+                  }
+                </div>
+              </div>
+              <small class="text-[11px] font-bold text-green-600 mb-2">{{ review.meta }}</small>
+              <p class="m-0 text-[13px] font-medium text-slate-600">{{ review.comment }}</p>
+            </article>
+          }
+        </div>
+
+        <div class="flex flex-col justify-center gap-3">
+          @for (row of ratingRows; track row.value) {
+            <div class="flex items-center gap-3 text-[12px] font-bold text-slate-600">
+              <span class="w-8">
+                {{ row.value }}
+                <svg class="w-3 h-3 inline pb-[1px] fill-current text-yellow-400" viewBox="0 0 24 24">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                </svg>
+              </span>
+              <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div class="h-full bg-slate-800 rounded-full" [style.width]="row.width + '%'"></div>
+              </div>
+              <small class="w-8 text-slate-400">({{ row.count }})</small>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+  }
+  </main>
+}

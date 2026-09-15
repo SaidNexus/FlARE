@@ -1,0 +1,126 @@
+<main class="w-full bg-[#faf9f8]">
+  <!-- Hero Section -->
+  <section id="about-hero" class="relative w-full h-[50vh] min-h-[400px] max-h-[600px] flex items-center justify-center overflow-hidden flare-about-hero lk-about-hero">
+    <div 
+      class="absolute inset-0 z-0"
+      style="background-image: url('/assets/hero.png'); background-size: cover; background-position: center; background-attachment: fixed;"
+    ></div>
+    <div class="absolute inset-0 bg-slate-900/70 z-10"></div>
+    
+    <div class="relative z-20 text-center px-4 max-w-4xl mx-auto flex flex-col items-center animate-in fade-in slide-in-from-bottom-8 duration-1000">
+      <img src="/assets/images/logo/logo.png" alt="FLARE" class="w-24 md:w-32 mb-8 filter brightness-0 invert opacity-90" />
+      <h1 class="text-4xl md:text-5xl lg:text-7xl font-black text-white mb-6 tracking-tight leading-tight">
+        {{ (isEn() ? config().headerTitleEn : config().headerTitleAr) || config().headerTitle || (isEn() ? 'The FLARE Story' : 'قصة FLARE') }}
+      </h1>
+      <p class="text-lg md:text-xl text-slate-200 font-medium max-w-2xl mx-auto leading-relaxed">
+        {{ (isEn() ? config().headerSubtitleEn : config().headerSubtitleAr) || config().headerSubtitle || (isEn() ? 'A leading Saudi brand redefining luxury hair care and beauty, giving you the confidence you deserve.' : 'علامة سعودية رائدة انطلقت بشغف لإعادة تعريف معايير العناية بالشعر والجمال، لنمنحك الثقة التي تستحقينها.') }}
+      </p>
+    </div>
+  </section>
+
+  <!-- Our Story Section -->
+  <section id="about-story" class="py-20 md:py-32 px-4 md:px-8 lg:px-12 max-w-[1400px] mx-auto flare-about-story lk-about-reasons">
+    <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
+      <div class="w-full lg:w-1/2 order-2 lg:order-1 relative group">
+        <div class="absolute inset-0 bg-flare-gold/10 transform rtl:translate-x-4 ltr:-translate-x-4 translate-y-4 rounded-3xl -z-10 transition-transform duration-500"></div>
+        <img 
+          src="/assets/images/covers/problem-banner.png" 
+          [alt]="isEn() ? 'FLARE Story' : 'قصة FLARE'" 
+          class="w-full aspect-square md:aspect-[4/3] lg:aspect-square object-cover rounded-3xl shadow-xl z-10 relative"
+        />
+      </div>
+      
+      <div class="w-full lg:w-1/2 order-1 lg:order-2 flex flex-col items-start rtl:text-right ltr:text-left">
+        <span class="text-flare-gold font-bold tracking-widest text-sm mb-4 uppercase">{{ isEn() ? 'OUR BEGINNING' : 'بدايتنا' }}</span>
+        <h2 class="text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 mb-8 leading-tight">
+          {{ (isEn() ? config().reasonsTitleEn : config().reasonsTitleAr) || config().reasonsTitle || (isEn() ? 'We believe everyone deserves radiant, healthy hair' : 'نؤمن بأن كل شخص يستحق شعراً صحياً ولامعاً') }}
+        </h2>
+        <div class="space-y-6 text-slate-600 font-medium text-lg md:text-xl leading-relaxed">
+          <p>
+            {{ (isEn() ? config().introTextEn : config().introTextAr) || config().introText || (isEn() ? 'The FLARE journey started from a simple observation: many hair care products on the market rely on harsh chemicals that offer temporary cosmetic fixes while causing long-term damage.' : 'بدأت رحلة FLARE من ملاحظة بسيطة: الكثير من منتجات العناية بالشعر في السوق تعتمد على المواد الكيميائية القاسية التي تعطي نتائج مؤقتة، لكنها تضر الشعر على المدى الطويل.') }}
+          </p>
+          <p>
+            {{ isEn() ? 'We set out to change the equation. We crafted our products with thoughtful formulations and pure natural extracts to revitalize your hair from roots to tips. Every product is the result of months of research, clinical development, and passion.' : 'قررنا تغيير هذه المعادلة. قمنا بتصميم منتجاتنا بتركيبات مدروسة ومواد طبيعية خالصة لتعمل على تجديد شعرك من الجذور وحتى الأطراف. كل منتج نقدمه هو نتيجة شهور من البحث والتطوير والتجارب السريرية.' }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values Section -->
+  <section id="about-values" class="bg-white py-20 md:py-32 border-y border-slate-100 flare-about-values lk-about-values">
+    <div class="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12 text-center">
+      <span class="text-flare-gold font-bold tracking-widest text-sm mb-4 uppercase inline-block">{{ isEn() ? 'OUR VALUES' : 'مبادئنا' }}</span>
+      <h2 class="text-3xl md:text-5xl font-black text-slate-900 mb-16">
+        {{ (isEn() ? config().valuesTitleEn : config().valuesTitleAr) || config().valuesTitle || (isEn() ? 'The Values That Drive Us' : 'القيم التي تحركنا') }}
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 rtl:text-right ltr:text-left">
+        @for (val of values; track val.title) {
+          <div class="bg-slate-50 rounded-3xl p-8 border border-slate-100 hover:border-flare-gold/30 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 group">
+            <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300">
+              @if (val.icon === 'star') {
+                <svg class="w-8 h-8 text-flare-gold" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+              } @else if (val.icon === 'leaf') {
+                <svg class="w-8 h-8 text-flare-gold" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                  <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+                  <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+                </svg>
+              } @else if (val.icon === 'flask') {
+                <svg class="w-8 h-8 text-flare-gold" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                  <path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/>
+                  <path d="M8.5 2h7"/>
+                  <path d="M7 16h10"/>
+                </svg>
+              } @else {
+                <svg class="w-8 h-8 text-flare-gold" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                  <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+                  <path d="m9 12 2 2 4-4"/>
+                </svg>
+              }
+            </div>
+            <h3 class="text-xl font-black text-slate-900 mb-4">{{ val.title }}</h3>
+            <p class="text-slate-600 font-medium leading-relaxed">{{ val.desc }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section id="about-cta" class="py-20 md:py-32 px-4 flare-about-cta lk-about-contact">
+    <div class="max-w-[1200px] mx-auto bg-slate-900 rounded-[3rem] p-10 md:p-20 text-center relative overflow-hidden isolate">
+      <!-- Background Decorations -->
+      <div class="absolute top-0 right-0 w-64 h-64 bg-flare-gold/20 rounded-full blur-[80px] -z-10 transform translate-x-1/2 -translate-y-1/2"></div>
+      <div class="absolute bottom-0 left-0 w-64 h-64 bg-flare-red/20 rounded-full blur-[80px] -z-10 transform -translate-x-1/2 translate-y-1/2"></div>
+      
+      <h2 class="text-3xl md:text-5xl font-black text-white mb-6">
+        {{ isEn() ? 'Ready to experience the difference?' : 'هل أنت مستعدة لتجربة الفرق؟' }}
+      </h2>
+      <p class="text-slate-300 text-lg md:text-xl font-medium max-w-2xl mx-auto mb-12 leading-relaxed">
+        {{ isEn() ? 'Join thousands of satisfied customers who trusted FLARE to restore their hair vitality and radiance. We are here to help you choose the ideal routine.' : 'انضمي إلى آلاف العملاء الذين وثقوا بـ FLARE لاستعادة حيوية وجمال شعرهن. نحن هنا لمساعدتك في اختيار الروتين الأنسب لك.' }}
+      </p>
+      
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a 
+          routerLink="/products" 
+          class="w-full sm:w-auto px-8 py-4 bg-flare-gold text-white rounded-xl font-bold text-lg hover:bg-[#8e6831] transition-colors flex items-center justify-center gap-2"
+        >
+          <span>{{ isEn() ? 'Browse Products' : 'تصفح المنتجات' }}</span>
+          <svg class="w-5 h-5 rtl:rotate-0 ltr:rotate-180" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="m12 19-7-7 7-7"/>
+            <path d="M19 12H5"/>
+          </svg>
+        </a>
+        <a 
+          routerLink="/policies" 
+          class="w-full sm:w-auto px-8 py-4 bg-white/10 text-white rounded-xl font-bold text-lg hover:bg-white/20 transition-colors flex items-center justify-center border border-white/20"
+        >
+          <span>{{ isEn() ? 'Our Policies' : 'سياساتنا' }}</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>

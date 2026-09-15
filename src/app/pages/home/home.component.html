@@ -1,0 +1,22 @@
+<div class="w-full min-h-screen text-slate-800 bg-gradient-to-b from-white via-[#FAF9F7]/50 to-white flare-home-page">
+  @for (section of pageConfig().sections; track section.id; let sIdx = $index) {
+    @if (section.enabled) {
+      <div [id]="'section-' + section.id"
+           [attr.data-section-id]="section.id"
+           [attr.data-section-type]="section.type"
+           [attr.data-section-index]="sIdx"
+           class="flare-home-section-wrapper transition-all duration-300">
+        @switch (section.type) {
+          @case ('hero') { <app-hero-section [config]="section"></app-hero-section> }
+          @case ('benefits') { <app-benefits-bar [config]="section"></app-benefits-bar> }
+          @case ('categories') { <app-category-section [config]="section"></app-category-section> }
+          @case ('bestsellers') { <app-products-section [config]="section"></app-products-section> }
+          @case ('promo') { <app-offer-banner [config]="section"></app-offer-banner> }
+        }
+      </div>
+    }
+  }
+
+  <div id="section-testimonials" data-section-type="testimonials"><app-testimonials-section></app-testimonials-section></div>
+  <div id="section-faq" data-section-type="faq"><app-faq-section class="block mt-10 mb-16" [className]="'mt-10 mb-16'"></app-faq-section></div>
+</div>

@@ -1,0 +1,72 @@
+<main class="w-full max-w-7xl min-h-[calc(100vh-86px)] mx-auto px-4 sm:px-7 md:px-6 lg:px-8 xl:px-10 pb-24 text-slate-900 bg-white">
+  @if (pageConfig().showHero !== false) {
+    <header id="section-sec-hero" data-section-type="hero" class="pt-6 mb-6">
+      <h1 class="text-[28px] font-bold mb-1 text-slate-900">
+        {{ (isEn() ? pageConfig().heroTitleEn : pageConfig().heroTitleAr) || pageConfig().heroTitle || (isEn() ? 'Special Offers' : 'العروض والخصومات') }}
+      </h1>
+      <p class="text-slate-500 m-0 text-sm font-medium">
+        {{ (isEn() ? pageConfig().heroSubtitleEn : pageConfig().heroSubtitleAr) || pageConfig().heroSubtitle || (isEn() ? 'Best prices and discounts for a limited time' : 'أفضل الأسعار والتخفيضات لفترة محدودة') }}
+      </p>
+    </header>
+  }
+
+  @if (loading()) {
+    <div class="text-center py-16 text-slate-500 font-medium">{{ isEn() ? 'Loading...' : 'جاري التحميل...' }}</div>
+  } @else {
+    <!-- Offer Cards -->
+    @if (pageConfig().showCurrentOffers !== false) {
+      <div id="section-sec-offers" data-section-type="promo" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+      @for (offer of offers(); track offer.id) {
+        @let isActive = activeOffer() === offer.id;
+
+        <div
+          (click)="setActiveOffer(offer.id)"
+          class="p-6 rounded-2xl cursor-pointer border-2 transition-all"
+          [ngClass]="isActive ? 'bg-flare-gold text-white border-flare-gold shadow-md' : 'bg-[#FCF8F5] text-slate-900 border-[#f0e6df] hover:border-flare-gold/50'"
+        >
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="m-0 font-bold text-lg">{{ isEn() ? (offer.titleEn || offer.title) : offer.title }}</h3>
+            <span class="font-extrabold text-xl">{{ offer.badge }}</span>
+          </div>
+          <p class="m-0 text-sm opacity-90 leading-relaxed">{{ offer.description }}</p>
+          <p class="mt-2 mb-0 text-xs opacity-75">
+            {{ isEn() ? 'Valid until:' : 'صالح حتى:' }} {{ offer.validUntil | date:'yyyy/MM/dd' }}
+          </p>
+        </div>
+      }
+    </div>
+    }
+
+    <!-- Offer Products -->
+    @if (offerProducts().length > 0) {
+      <h2 class="text-xl font-bold mb-4 text-slate-900">{{ isEn() ? 'Offer Products' : 'منتجات العرض' }}</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        @for (product of offerProducts(); track product.id) {
+          <div class="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-sm flex flex-col">
+            <a [routerLink]="['/products', product.id]" class="block aspect-square overflow-hidden bg-slate-50 p-4">
+              <img [src]="getProductImage(product)" (error)="onImgError($event)" [alt]="isEn() ? (product.nameEn || product.nameAr) : product.nameAr" class="w-full h-full object-contain mix-blend-multiply transition-transform hover:scale-105" />
+            </a>
+            <div class="p-3 flex flex-col flex-1">
+              <h3 class="m-0 mb-2 text-sm font-bold text-slate-800 line-clamp-1">{{ isEn() ? (product.nameEn || product.nameAr) : product.nameAr }}</h3>
+              <div class="flex justify-between items-center mt-auto pt-2">
+                <span class="font-bold text-flare-gold">{{ product.price }} {{ currencyLabel() }}</span>
+                <button
+                  type="button"
+                  (click)="handleAddToCart(product)"
+                  class="px-3 py-1.5 bg-flare-gold text-white text-xs font-bold rounded-lg flex items-center gap-1 hover:bg-flare-gold-dark transition-colors cursor-pointer"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="21" r="1" />
+                    <circle cx="20" cy="21" r="1" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+                  </svg>
+                  {{ isEn() ? 'Add' : 'أضف' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+</main>

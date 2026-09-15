@@ -1,0 +1,169 @@
+<main class="w-full max-w-7xl min-h-[calc(100vh-86px)] mx-auto px-4 sm:px-7 md:px-6 lg:px-8 xl:px-10 pb-24 text-slate-900 bg-slate-50">
+  <header id="section-sec-header" data-section-type="header" class="flex flex-col gap-2 pt-6 sm:pt-10 mb-8 sm:mb-10">
+    <nav class="flex items-center gap-1.5 text-[13px] font-medium text-slate-500 mb-2">
+      <a routerLink="/" class="text-slate-500 no-underline hover:text-flare-gold transition-colors">{{ isEn() ? 'Home' : 'الرئيسية' }}</a>
+      <svg class="w-3.5 h-3.5 rtl:rotate-0 ltr:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+      <span class="text-slate-800 font-bold">{{ headerTitle() }}</span>
+    </nav>
+    <h1 class="m-0 text-[24px] sm:text-[32px] font-black text-slate-900 leading-tight">{{ headerTitle() }}</h1>
+    <p class="m-0 text-[14px] sm:text-[15px] font-medium text-slate-500">{{ headerSubtitle() }}</p>
+  </header>
+
+  @if (loading()) {
+    <div class="flex flex-col gap-4">
+      <div class="h-[160px] bg-white rounded-[16px] animate-pulse border border-slate-200"></div>
+      <div class="h-[160px] bg-white rounded-[16px] animate-pulse border border-slate-200"></div>
+    </div>
+  } @else if (error()) {
+    <div class="flex items-center justify-center p-8 bg-white border border-slate-200 rounded-[16px] text-center">
+      <p class="text-[15px] font-medium text-flare-red">{{ error() }}</p>
+    </div>
+  } @else if (orders().length === 0) {
+    <section id="section-sec-empty" data-section-type="empty" class="flex flex-col items-center justify-center p-12 bg-white border border-slate-200 rounded-[24px] text-center min-h-[400px]">
+      <div class="flex items-center justify-center w-20 h-20 bg-slate-50 rounded-full mb-6">
+        <svg class="w-10 h-10 text-slate-300 stroke-[1.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <circle cx="9" cy="21" r="1" />
+          <circle cx="20" cy="21" r="1" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+        </svg>
+      </div>
+      <h2 class="m-0 mb-3 text-[22px] font-black text-slate-900">{{ emptyTitle() }}</h2>
+      <p class="m-0 mb-8 text-[15px] font-medium text-slate-500 max-w-[300px]">{{ emptyText() }}</p>
+      <a routerLink="/products" class="inline-flex items-center justify-center h-[48px] px-8 text-[15px] font-bold text-white bg-slate-900 rounded-full no-underline transition-all hover:bg-slate-800">{{ emptyCta() }}</a>
+    </section>
+  } @else {
+    <div class="flex flex-col gap-6">
+      @for (order of orders(); track order.id) {
+        @let statusInfo = getStatusInfo(order.status);
+        @let isExpanded = expandedOrderId() === order.id;
+
+        <div class="bg-white border border-slate-200 rounded-[20px] shadow-[0_4px_16px_rgba(21,32,45,0.02)] overflow-hidden transition-all hover:border-slate-300">
+          <!-- Order Header -->
+          <header
+            class="flex flex-wrap items-center justify-between gap-4 p-5 sm:p-6 bg-white cursor-pointer transition-colors hover:bg-slate-50"
+            (click)="toggleExpand(order.id)"
+          >
+            <div class="flex items-center gap-3">
+              <div class="flex items-center justify-center w-10 h-10 bg-slate-100 rounded-full text-slate-600">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-[12px] font-bold text-slate-400">{{ isEn() ? 'Order ID' : 'رقم الطلب' }}</span>
+                <span class="text-[16px] font-black text-slate-900 leading-tight">#{{ order.orderNumber }}</span>
+              </div>
+            </div>
+            <span class="px-3 py-1.5 rounded-full text-[13px] font-bold" [ngClass]="getStatusClass(order.status)">
+              {{ statusInfo.label }}
+            </span>
+          </header>
+
+          <div class="px-5 sm:px-6 pb-5 sm:pb-6">
+            <div class="flex flex-wrap items-center gap-4 sm:gap-8 p-4 sm:p-5 bg-slate-50 border border-slate-100 rounded-[16px] mb-5">
+              <div class="flex flex-col gap-1 flex-1 min-w-[100px]">
+                <span class="text-[12px] font-bold text-slate-500">{{ isEn() ? 'Date' : 'التاريخ' }}</span>
+                <span class="text-[14px] font-black text-slate-900">{{ order.createdAt | date:'yyyy/MM/dd' }}</span>
+              </div>
+              <div class="w-px h-8 bg-slate-200 hidden sm:block"></div>
+              <div class="flex flex-col gap-1 flex-1 min-w-[100px]">
+                <span class="text-[12px] font-bold text-slate-500">{{ isEn() ? 'Total' : 'الإجمالي' }}</span>
+                <span class="text-[14px] font-black text-slate-900">{{ order.total }} {{ currencyLabel() }}</span>
+              </div>
+              <div class="w-px h-8 bg-slate-200 hidden sm:block"></div>
+              <div class="flex flex-col gap-1 flex-1 min-w-[100px]">
+                <span class="text-[12px] font-bold text-slate-500">{{ isEn() ? 'Products' : 'المنتجات' }}</span>
+                <span class="text-[14px] font-black text-slate-900">{{ order.items.length }} {{ isEn() ? 'items' : 'منتج' }}</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-4">
+              <div class="flex items-center">
+                @for (item of (order.items || []).slice(0, 4); track item.productId + '-' + item.size; let i = $index) {
+                  <div class="relative flex items-center justify-center w-12 h-12 bg-white border border-slate-200 rounded-xl rtl:ml-[-12px] ltr:mr-[-12px] shadow-sm first:ml-0 first:mr-0 hover:z-10 transition-transform hover:-translate-y-1">
+                    @if (item.productImage) {
+                      <img [src]="item.productImage" (error)="onImgError($event)" [alt]="item.productName" class="w-[80%] h-[80%] object-contain" />
+                    } @else {
+                      <svg class="w-6 h-6 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                      </svg>
+                    }
+                    <span class="absolute -top-1 rtl:-right-1 ltr:-left-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-slate-900 rounded-full">
+                      {{ item.quantity }}
+                    </span>
+                  </div>
+                }
+                @if (order.items.length > 4) {
+                  <div class="flex items-center justify-center w-12 h-12 bg-slate-100 border border-slate-200 text-[13px] font-bold text-slate-600 rounded-xl rtl:ml-[-12px] ltr:mr-[-12px] shadow-sm relative z-10">
+                    +{{ order.items.length - 4 }}
+                  </div>
+                }
+              </div>
+
+              <button
+                type="button"
+                class="flex items-center justify-center h-10 px-4 text-[13px] font-bold text-slate-700 bg-white border border-slate-200 rounded-full transition-all hover:bg-slate-50 hover:border-slate-300 shadow-sm cursor-pointer"
+                (click)="toggleExpand(order.id)"
+              >
+                {{ isExpanded ? (isEn() ? 'Hide Details' : 'إخفاء التفاصيل') : (isEn() ? 'View Details' : 'عرض التفاصيل') }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Expanded Timeline & Details -->
+          @if (isExpanded) {
+            <div class="border-t border-slate-100 bg-slate-50/50 p-5 sm:p-6 animate-in slide-in-from-top-4 fade-in duration-300">
+              @if (order.status !== 'cancelled') {
+                <div class="mb-8 p-6 bg-white border border-slate-200 rounded-[16px]">
+                  <div class="relative flex items-start justify-between">
+                    <div class="absolute top-4 left-4 right-4 h-1 bg-slate-100 rounded-full overflow-hidden" [dir]="isEn() ? 'ltr' : 'rtl'">
+                      <div class="h-full bg-flare-gold transition-all duration-700" [style.width]="timelineWidth(statusInfo.stepIndex)"></div>
+                    </div>
+
+                    @for (st of timelineSteps(); track st.id; let idx = $index) {
+                      @let isCompleted = idx < statusInfo.stepIndex;
+                      @let isActive = idx === statusInfo.stepIndex;
+
+                      <div class="relative z-10 flex flex-col items-center flex-1">
+                        <div
+                          class="flex items-center justify-center w-9 h-9 mb-3 rounded-full border-2 transition-all"
+                          [ngClass]="isCompleted ? 'bg-flare-gold border-flare-gold text-white' : isActive ? 'bg-white border-flare-gold text-flare-gold shadow-[0_0_0_4px_rgba(169,126,61,0.15)]' : 'bg-white border-slate-200 text-slate-300'"
+                        >
+                          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            @if (isCompleted || isActive) {
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            } @else {
+                              <circle cx="12" cy="12" r="6" />
+                            }
+                          </svg>
+                        </div>
+                        <div class="text-[12px] font-bold text-center leading-tight mb-1" [ngClass]="isCompleted || isActive ? 'text-slate-900' : 'text-slate-400'">
+                          {{ st.label }}
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+              <!-- Items Breakdown in Expanded View -->
+              <div class="bg-white border border-slate-200 rounded-[16px] p-5 mb-4">
+                <h4 class="m-0 mb-3 text-sm font-bold text-slate-800">{{ isEn() ? 'Product Details' : 'تفاصيل المنتجات' }}</h4>
+                <div class="divide-y divide-slate-100">
+                  @for (it of order.items; track it.productId + '-' + it.size) {
+                    <div class="py-2.5 flex justify-between items-center text-sm">
+                      <span class="font-medium text-slate-800">{{ it.productName }} ({{ it.size }}) × {{ it.quantity }}</span>
+                      <span class="font-bold text-slate-900">{{ it.price * it.quantity }} {{ currencyLabel() }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</main>

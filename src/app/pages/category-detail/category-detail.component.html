@@ -1,0 +1,97 @@
+<main class="w-full max-w-7xl min-h-[calc(100vh-86px)] mx-auto px-4 sm:px-7 md:px-6 lg:px-8 xl:px-10 pb-24 text-slate-900 bg-white">
+  <nav class="flex items-center gap-2 pt-6 text-[13px] font-medium text-slate-500">
+    <a routerLink="/" class="text-slate-500 no-underline hover:text-flare-gold transition-colors">{{ isEn() ? 'Home' : 'الرئيسية' }}</a>
+    <svg class="text-slate-300 w-4 h-4 rtl:rotate-0 ltr:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+    <a routerLink="/categories" class="text-slate-500 no-underline hover:text-flare-gold transition-colors">{{ isEn() ? 'Categories' : 'التصنيفات' }}</a>
+    <svg class="text-slate-300 w-4 h-4 rtl:rotate-0 ltr:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+    <span class="text-slate-800 font-bold">{{ categoryName() }}</span>
+  </nav>
+
+  @if (pageConfig().showTitle !== false) {
+    <header id="section-sec-header" data-section-type="header" class="grid place-items-center min-h-[91px]">
+      <h1 class="mt-2 mb-0 text-slate-900 text-2xl sm:text-[30px] font-extrabold leading-[1.3]">{{ categoryName() }}</h1>
+    </header>
+  }
+
+  @if (loading()) {
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-[13px]">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="flex flex-col min-w-0 min-h-[268px] overflow-hidden bg-white border border-slate-200 rounded-[15px] animate-pulse opacity-40">
+          <div class="h-[140px] bg-slate-100"></div>
+        </div>
+      }
+    </div>
+  } @else if (error()) {
+    <div class="text-center p-16 text-slate-500"><p>{{ error() }}</p></div>
+  } @else if (products().length === 0) {
+    <div class="flex flex-col items-center justify-center min-h-[300px] text-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-[24px] px-5 py-12">
+      <p class="text-slate-500 font-medium mb-4">{{ isEn() ? 'No products found in this category' : 'لا توجد منتجات في هذا التصنيف' }}</p>
+      <a routerLink="/products" class="text-[14px] font-bold text-flare-gold underline hover:text-flare-gold-dark transition-colors">{{ isEn() ? 'Browse all products' : 'تصفح جميع المنتجات' }}</a>
+    </div>
+  } @else {
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-[13px]">
+      @for (product of products(); track product.id) {
+        @let isFav = appState.isFavorite(product.id);
+
+        <article class="group relative flex flex-col min-w-0 min-h-[clamp(218px,35.3vw,268px)] overflow-hidden text-slate-900 bg-white border border-slate-200 rounded-[clamp(11px,2vw,15px)] transition-all duration-170 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(22,34,48,0.07)] hover:border-flare-gold/30">
+          <a [routerLink]="['/products', product.id]" class="relative h-[clamp(91px,16.85vw,140px)] p-[clamp(5px,1vw,10px)] bg-white overflow-hidden">
+            <img [src]="product.images[0]" [alt]="isEn() ? (product.nameEn || product.nameAr) : product.nameAr" loading="lazy" class="w-full h-full object-contain transition-transform duration-200 group-hover:scale-105" />
+            @if (product.badge) {
+              <span class="absolute top-[6px] left-[6px] sm:top-[9px] sm:left-[9px] z-10 flex items-center h-[18px] sm:h-[22px] px-1.5 sm:px-[7px] text-[8px] sm:text-[10px] font-extrabold text-white leading-none bg-flare-red rounded-full overflow-hidden">
+                {{ product.badge }}
+              </span>
+            }
+          </a>
+
+          <button
+            type="button"
+            class="absolute top-2.5 right-2.5 z-10 flex items-center justify-center w-[26px] h-[26px] p-0 border border-slate-200 rounded-full transition-all duration-150 cursor-pointer hover:border-flare-red"
+            [ngClass]="isFav ? 'bg-flare-red text-white border-flare-red' : 'bg-white text-slate-300 hover:text-flare-red'"
+            (click)="toggleFav($event, product.id)"
+            [attr.aria-label]="isFav ? (isEn() ? 'Remove from favorites' : 'إزالة من المفضلة') : (isEn() ? 'Add to favorites' : 'إضافة إلى المفضلة')"
+          >
+            <svg class="w-3.5 h-3.5 stroke-2" [attr.fill]="isFav ? 'currentColor' : 'none'" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
+
+          <div class="flex flex-col flex-1 px-1 sm:px-2.5 pt-1 pb-3.5 rtl:text-right ltr:text-left">
+            <a [routerLink]="['/products', product.id]" class="no-underline">
+              <h3 class="m-0 mb-1 sm:mb-1.5 text-[clamp(11px,1.9vw,13px)] font-bold text-slate-800 leading-[1.3] line-clamp-2 transition-colors group-hover:text-flare-gold">
+                {{ (isEn() ? product.nameEn : product.nameAr) || product.nameAr }}
+              </h3>
+            </a>
+
+            <div class="flex items-center justify-between mt-auto">
+              <div class="flex flex-wrap items-baseline gap-1 sm:gap-2">
+                <span class="text-[clamp(13px,2.25vw,16px)] font-black text-slate-900">{{ product.price }} {{ currencyLabel() }}</span>
+                @if (product.originalPrice && product.originalPrice > product.price) {
+                  <del class="flex items-baseline gap-[2px] text-[clamp(9px,1.6vw,12px)] font-medium text-slate-400">
+                    {{ product.originalPrice }} {{ currencyLabel() }}
+                  </del>
+                }
+              </div>
+              <button
+                type="button"
+                class="grid place-items-center w-[28px] h-[28px] sm:w-[32px] sm:h-[32px] text-white bg-slate-900 border-none rounded-full cursor-pointer transition-all hover:bg-flare-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flare-gold/50 flex-shrink-0"
+                (click)="handleAddToCart($event, product)"
+                [attr.aria-label]="isEn() ? 'Add to cart' : 'إضافة إلى السلة'"
+              >
+                <svg class="w-3.5 h-3.5 stroke-[1.8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <circle cx="9" cy="21" r="1" />
+                  <circle cx="20" cy="21" r="1" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</main>
+

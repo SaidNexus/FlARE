@@ -1,0 +1,79 @@
+<main class="lk-notifications-page min-h-[calc(100vh-86px)] w-full max-w-7xl mx-auto px-4 sm:px-7 md:px-6 lg:px-8 xl:px-10 py-6">
+  <header id="section-sec-header" data-section-type="header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <div>
+      <h1 style="font-size: 1.5rem; font-weight: 700; margin: 0;">{{ pageTitle() }}</h1>
+      @if (unreadCount > 0) {
+        <span style="color: #BE9048; font-size: 0.9rem;">{{ unreadCount }} {{ isEn() ? 'unread' : 'غير مقروءة' }}</span>
+      }
+    </div>
+    <div style="display: flex; gap: 8px;">
+      @if (unreadCount > 0) {
+        <button 
+          type="button"
+          (click)="handleMarkAllRead()" 
+          style="padding: 8px 12px; background: transparent; border: 1px solid #BE9048; border-radius: 8px; cursor: pointer; color: #BE9048; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M20 6 9 17l-5-5"/>
+          </svg>
+          <span>{{ isEn() ? 'Mark all as read' : 'تعليم الكل كمقروءة' }}</span>
+        </button>
+      }
+      @if (notifications.length > 0) {
+        <button 
+          type="button"
+          (click)="handleClear()" 
+          style="padding: 8px 12px; background: transparent; border: 1px solid #f00; border-radius: 8px; cursor: pointer; color: #f00; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M3 6h18"/>
+            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+          </svg>
+          <span>{{ isEn() ? 'Clear all' : 'حذف الكل' }}</span>
+        </button>
+      }
+    </div>
+  </header>
+
+  @if (loading) {
+    <div style="text-align: center; padding: 32px; color: #888;">{{ isEn() ? 'Loading...' : 'جاري التحميل...' }}</div>
+  } @else if (notifications.length === 0) {
+    <div id="section-sec-empty" data-section-type="empty" style="display: flex; flex-direction: column; align-items: center; padding: 64px; gap: 16px; color: #888;">
+      <svg style="width: 48px; height: 48px;" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+        <path d="M8.7 3A6 6 0 0 1 18 8a21.3 21.3 0 0 0 .6 5"/>
+        <path d="M17 17H3s3-2 3-9a4.67 4.67 0 0 1 .3-1.7"/>
+        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+        <line x1="2" x2="22" y1="2" y2="22"/>
+      </svg>
+      <p>{{ emptyStateTitle() }}</p>
+    </div>
+  } @else {
+    <div id="section-sec-notifications" data-section-type="notifications" style="display: flex; flex-direction: column; gap: 8px;">
+      @for (notif of notifications; track notif.id) {
+        <div
+          (click)="!notif.read && handleMarkRead(notif.id)"
+          [style.padding]="'16px 20px'"
+          [style.background]="notif.read ? '#fff' : '#FCF8F5'"
+          [style.border-radius]="'12px'"
+          [style.border]="notif.read ? '1px solid #f0e6df' : '1px solid #A97E3D'"
+          [style.cursor]="notif.read ? 'default' : 'pointer'"
+          style="display: flex; gap: 12px; align-items: flex-start; transition: all 0.2s ease;"
+        >
+          <span style="font-size: 1.5rem;">{{ getTypeIcon(notif.type) }}</span>
+          <div style="flex: 1;" class="rtl:text-right ltr:text-left">
+            <div [style.font-weight]="notif.read ? 400 : 700" style="margin-bottom: 4px;">{{ notif.title }}</div>
+            <p style="margin: 0; color: #666; font-size: 0.9rem;">{{ notif.message }}</p>
+            <span style="font-size: 0.75rem; color: #999; margin-top: 4px; display: block;">
+              {{ formatDate(notif.createdAt || notif.date) }}
+            </span>
+          </div>
+          @if (!notif.read) {
+            <div style="width: 8px; height: 8px; border-radius: 50%; background: #A97E3D; flex-shrink: 0; margin-top: 6px;"></div>
+          }
+        </div>
+      }
+    </div>
+  }
+</main>
+

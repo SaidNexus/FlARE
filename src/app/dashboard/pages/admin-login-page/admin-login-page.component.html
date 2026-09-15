@@ -1,0 +1,93 @@
+<main class="admin-login" dir="rtl">
+  <div class="admin-login__container">
+    <div class="admin-login__card">
+      <!-- Brand Header -->
+      <div class="admin-login__header">
+        <div class="admin-login__brand">
+          <span class="admin-login__brand-primary">FLARE</span>
+          <span class="admin-login__brand-secondary">ADMIN</span>
+        </div>
+        <h1 class="admin-login__title">تسجيل الدخول إلى لوحة التحكم</h1>
+        <p class="admin-login__subtitle">أدخل بيانات الاعتماد للمتابعة إلى لوحة الإدارة</p>
+      </div>
+
+      <!-- Error Alert -->
+      <div *ngIf="error" class="admin-login__alert" role="alert">
+        <lucide-icon [img]="CircleAlert" class="admin-login__alert-icon" [size]="18"></lucide-icon>
+        <span>{{ error }}</span>
+      </div>
+
+      <!-- Form -->
+      <form class="admin-login__form" (ngSubmit)="onSubmit($event)" novalidate>
+        <!-- Email Field -->
+        <div class="admin-login__field-group">
+          <label for="admin-email" class="admin-login__label">اسم المستخدم أو البريد الإلكتروني</label>
+          <div class="admin-login__input-wrapper">
+            <input
+              id="admin-email"
+              name="email"
+              type="text"
+              autocomplete="username"
+              required
+              dir="auto"
+              [(ngModel)]="email"
+              (input)="error = ''"
+              placeholder="أي اسم مستخدم أو بريد إلكتروني"
+              class="admin-login__input"
+            />
+            <span class="admin-login__input-icon">
+              <lucide-icon [img]="Mail" [size]="18"></lucide-icon>
+            </span>
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="admin-login__field-group">
+          <label for="admin-password" class="admin-login__label">كلمة المرور</label>
+          <div class="admin-login__input-wrapper">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              id="admin-password"
+              name="password"
+              autocomplete="current-password"
+              required
+              dir="ltr"
+              [(ngModel)]="password"
+              (input)="error = ''"
+              placeholder="••••••••"
+              class="admin-login__input admin-login__input--password"
+            />
+            <span class="admin-login__input-icon">
+              <lucide-icon [img]="Lock" [size]="18"></lucide-icon>
+            </span>
+            <button
+              type="button"
+              (click)="togglePassword()"
+              class="admin-login__toggle-btn"
+              [attr.aria-label]="showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'"
+            >
+              <lucide-icon [img]="showPassword ? EyeOff : Eye" [size]="18"></lucide-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="admin-login__submit"
+          [disabled]="loading || !email || !password"
+        >
+          <span *ngIf="loading" class="admin-login__spinner"></span>
+          <lucide-icon *ngIf="!loading" [img]="LogIn" [size]="18"></lucide-icon>
+          <span>{{ loading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول' }}</span>
+        </button>
+
+        <!-- Security Badge -->
+        <div class="admin-login__security">
+          <lucide-icon [img]="ShieldCheck" [size]="16" class="admin-login__security-icon"></lucide-icon>
+          <span>بوابة آمنة ومحمية خاصة بإدارة FLARE</span>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>

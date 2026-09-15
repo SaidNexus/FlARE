@@ -1,0 +1,114 @@
+import { sanitizeWithInitial } from '../../utils/config-sanitizer';
+import { Injectable, signal, effect , NgZone, inject} from '@angular/core';
+type SizeGuidePageConfig = {
+    pageTitle: string;
+    pageSubtitle: string;
+    showMeasurementsTable: boolean;
+    showHelpSection: boolean;
+    heroImage: string;
+};
+
+const DEFAULT_CONFIG = {
+    pageTitle: 'دليل العناية بالشعر',
+    pageTitleAr: 'دليل العناية بالشعر',
+    pageTitleEn: 'Hair Care & Sizing Guide',
+    pageSubtitle: 'تعرّف على نوع شعرك واختر المنتجات المناسبة لك',
+    pageSubtitleAr: 'تعرّف على نوع شعرك واختر المنتجات المناسبة لك',
+    pageSubtitleEn: 'Discover your hair type and choose the best suited products for you',
+    showMeasurementsTable: true,
+    showHelpSection: true,
+    heroImage: '',
+};
+
+
+
+
+
+
+
+
+const INSTANCE_ID = typeof crypto !== 'undefined' && crypto.randomUUID 
+  ? crypto.randomUUID() 
+  : Math.random().toString(36).substring(2) + Date.now().toString(36);
+
+@Injectable({
+  providedIn: 'root'
+})
+export class SizeGuidePageConfigService {
+  private readonly storageKey = 'flare-size-guide-config';
+
+  private isApplyingExternalUpdate = false;
+  private lastSavedJson: string = '';
+
+  readonly pageConfig = signal<any>(this.loadInitialConfig());
+
+  private zone = inject(NgZone);
+
+  constructor() {
+    this.lastSavedJson = JSON.stringify(this.pageConfig());
+
+    window.addEventListener('storage', (e: StorageEvent) => {
+      if ((e as any).__sourceInstanceId === INSTANCE_ID) return; // Discard self-triggered synthetic events
+
+      if (e.key === this.storageKey && e.newValue) {
+        if (e.newValue === this.lastSavedJson) return; // Discard echo / identical payload
+
+        try {
+          const updated = JSON.parse(e.newValue);
+          const merged = this.mergeWithInitial(updated);
+          const mergedJson = JSON.stringify(merged);
+          if (mergedJson === this.lastSavedJson) return;
+
+          this.zone.run(() => {
+            this.isApplyingExternalUpdate = true;
+            this.lastSavedJson = mergedJson;
+            this.pageConfig.set(merged);
+            queueMicrotask(() => {
+              this.isApplyingExternalUpdate = false;
+            });
+          });
+        } catch (_) {}
+      }
+    });
+
+    effect(() => {
+      const config = this.pageConfig();
+      const stringified = JSON.stringify(config);
+
+      if (this.isApplyingExternalUpdate) return;
+      if (stringified === this.lastSavedJson) return;
+
+      this.lastSavedJson = stringified;
+      localStorage.setItem(this.storageKey, stringified);
+      
+      try {
+        const event = new StorageEvent('storage', {
+          key: this.storageKey,
+          newValue: stringified,
+          storageArea: localStorage,
+        });
+        (event as any).__sourceInstanceId = INSTANCE_ID;
+        window.dispatchEvent(event);
+      } catch (_) {}
+    });
+  }
+
+  updateConfig(newConfig: any) {
+    this.zone.run(() => { this.pageConfig.set(newConfig); });
+  }
+
+  private loadInitialConfig(): any {
+    const saved = localStorage.getItem(this.storageKey);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return this.mergeWithInitial(parsed);
+      } catch (e) {}
+    }
+    return DEFAULT_CONFIG;
+  }
+
+  private mergeWithInitial(parsed: any): any {
+    return sanitizeWithInitial(parsed, DEFAULT_CONFIG);
+  }
+}
